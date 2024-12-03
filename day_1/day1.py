@@ -31,9 +31,7 @@ def generate_hash_map(array):
     hash_map = {}
     for item in array:
         if item in hash_map:
-            count = hash_map[item]
-            count += 1
-            hash_map[item] = count
+            hash_map[item] += 1
         else:
             hash_map[item] = 1
 
