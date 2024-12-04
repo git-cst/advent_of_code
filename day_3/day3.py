@@ -7,7 +7,23 @@ def get_data():
     return data
 
 def find_mul_instances(data):
-    regex_mul_array = re.findall('(mul\(\d+,\d+\))', data)
+    indices_of_string_to_include = []
+    index = 0
+    include_flag = True
+    for i in range(len(data)-1):
+        if data[i:i+7] == "don't()" and include_flag == True:
+            indices_of_string_to_include.append([index, i])
+            include_flag = False
+
+        if data[i:i+4] == "do()":
+            index = i
+            include_flag = True
+    
+    string_to_parse = ''
+    for indexes in indices_of_string_to_include:
+        string_to_parse += data[indexes[0]:indexes[1]]
+
+    regex_mul_array = re.findall('(mul\(\d+,\d+\))', string_to_parse)
     return regex_mul_array
 
 def calculate_result(array):
