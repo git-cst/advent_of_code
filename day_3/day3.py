@@ -7,6 +7,10 @@ def get_data():
     return data
 
 def find_mul_instances(data: str):
+    regex_mul_array: list[str] = re.findall(r'(mul\(\d+,\d+\))', data)
+    return regex_mul_array
+
+def find_mul_instances_do_criteria(data: str):
     indices_of_string_to_include: list[str] = []
     index: int = 0
     include_flag: bool = True
@@ -36,8 +40,10 @@ def calculate_result(array: list[str]):
 
 def solve():
     data = get_data()
-    mul_instances = find_mul_instances(data)
-    print(calculate_result(mul_instances))
+    mul_val = find_mul_instances(data)
+    print(f'Mul value: {calculate_result(mul_val)}')
+    mul_val_with_do = find_mul_instances_do_criteria(data)
+    print(f'Mul value including do criteria: {calculate_result(mul_val_with_do)}')
 
 if __name__ == "__main__":
     solve()
