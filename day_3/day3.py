@@ -11,17 +11,17 @@ def find_mul_instances(data: str):
     index: int = 0
     include_flag: bool = True
     for i in range(len(data)-1):
-        if data[i:i+7] == "don't()" and include_flag == True:
+        if data[i:i+7] == "don't()" and include_flag:
             indices_of_string_to_include.append([index, i])
             include_flag = False
 
-        if data[i:i+4] == "do()":
+        if data[i:i+4] == "do()" and not include_flag:
             index = i
             include_flag = True
     
     string_to_parse: str = ''
-    for indexes in indices_of_string_to_include:
-        string_to_parse += data[indexes[0]:indexes[1]]
+    for start, end in indices_of_string_to_include:
+        string_to_parse += data[start:end]
 
     regex_mul_array: list[str] = re.findall(r'(mul\(\d+,\d+\))', string_to_parse)
     return regex_mul_array
