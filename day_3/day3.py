@@ -1,7 +1,7 @@
 import re; import os
 
 def get_data():
-    with open(f'{os.path.dirname(__file__)}\\day3_input.txt', 'r') as file:
+    with open(f'{os.path.dirname(__file__)}/day3_input.txt', 'r') as file:
         data: str = file.read()
     
     return data

@@ -2,7 +2,7 @@ import os
 
 def generate_arrays():
     array1 = []
-    with open(f'{os.path.dirname(__file__)}\\day2_input.csv', "r") as file:
+    with open(f'{os.path.dirname(__file__)}/day2_input.csv', "r") as file:
         data = file.read()
         data = data.split('\n')
 
@@ -12,9 +12,10 @@ def generate_arrays():
     
     return array1
 
-def safe(array):
+def safe(array: list, err: bool = None):
     trajectory = None
-    for i in range(len(array)):
+    i = 0
+    while i < len(array) - 1:
         if (i + 1) > len(array) - 1:
             return True
         
@@ -23,14 +24,24 @@ def safe(array):
 
         difference = abs(curr_element - next_element)
         if difference > 3 or difference == 0:
-            return False
+            if not err:
+                array.pop(i+1)
+                return safe(array, True)
+            else:
+                return False
         
         curr_trajectory = "DESC" if curr_element - next_element < 0 else "ASC"
 
         if trajectory is None:
             trajectory = curr_trajectory
         elif curr_trajectory != trajectory:
-            return False
+            if not err:
+                array.pop(i+1)
+                return safe(array, True)
+            else:
+                return False
+        
+        i += 1
     
     return True
 

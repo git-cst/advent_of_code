@@ -3,7 +3,7 @@ import os
 def generate_arrays():
     array1 = []
     array2 = []
-    with open(f'{os.path.dirname(__file__)}\\day1_input.csv', "r") as file:
+    with open(f'{os.path.dirname(__file__)}/day1_input.csv', "r") as file:
         data = file.read()
         data = data.split('\n')
 
