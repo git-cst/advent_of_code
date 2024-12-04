@@ -11,7 +11,7 @@ def generate_arrays():
     return array1
 
 def safe(array):
-    curr_trajectory = None
+    trajectory = None
     for i in range(len(array)):
         if (i + 1) > len(array) - 1:
             return True
@@ -23,23 +23,24 @@ def safe(array):
         if difference > 3 or difference == 0:
             return False
         
-        trajectory = "DESC" if curr_element - next_element < 0 else "ASC"
+        curr_trajectory = "DESC" if curr_element - next_element < 0 else "ASC"
 
-        if curr_trajectory != None:
-            if curr_trajectory != trajectory:
-                return False
-        else:
-            curr_trajectory = trajectory
+        if trajectory is None:
+            trajectory = curr_trajectory
+        elif curr_trajectory != trajectory:
+            return False
     
     return True
 
-
-if __name__ == '__main__':
+def solve():
     arrays = generate_arrays()
 
-    count_unsafe = 0
+    count_safe = 0
     for arr in arrays:
-        if not(safe(arr)):
-            count_unsafe += 1
+        if safe(arr):
+            count_safe += 1
 
-    print(count_unsafe)
+    print(count_safe)
+
+if __name__ == '__main__':
+    solve()
