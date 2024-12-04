@@ -1,7 +1,7 @@
-import re
+import re; import os
 
 def get_data():
-    with open(r'C:\Users\cas\Documents\advent_of_code_2024\day_3\day3_input.txt', 'r') as file:
+    with open(f'{os.path.dirname(__file__)}\\day3_input.txt', 'r') as file:
         data: str = file.read()
     
     return data
@@ -23,7 +23,7 @@ def find_mul_instances(data: str):
     for indexes in indices_of_string_to_include:
         string_to_parse += data[indexes[0]:indexes[1]]
 
-    regex_mul_array: list[str] = re.findall('(mul\(\d+,\d+\))', string_to_parse)
+    regex_mul_array: list[str] = re.findall(r'(mul\(\d+,\d+\))', string_to_parse)
     return regex_mul_array
 
 def calculate_result(array: list[str]):

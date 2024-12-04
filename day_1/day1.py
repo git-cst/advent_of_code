@@ -1,7 +1,9 @@
+import os
+
 def generate_arrays():
     array1 = []
     array2 = []
-    with open('advent_of_code_2024/day_1/day1_input.csv', "r") as file:
+    with open(f'{os.path.dirname(__file__)}\\day1_input.csv', "r") as file:
         data = file.read()
         data = data.split('\n')
 
