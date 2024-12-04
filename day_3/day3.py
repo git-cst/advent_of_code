@@ -1,15 +1,15 @@
 import re
 
 def get_data():
-    with open(r'C:\Users\cas\workspace\advent_of_code_2024\day_3\day3_input.txt', 'r') as file:
-        data = file.read()
+    with open(r'C:\Users\cas\Documents\advent_of_code_2024\day_3\day3_input.txt', 'r') as file:
+        data: str = file.read()
     
     return data
 
-def find_mul_instances(data):
-    indices_of_string_to_include = []
-    index = 0
-    include_flag = True
+def find_mul_instances(data: str):
+    indices_of_string_to_include: list[str] = []
+    index: int = 0
+    include_flag: bool = True
     for i in range(len(data)-1):
         if data[i:i+7] == "don't()" and include_flag == True:
             indices_of_string_to_include.append([index, i])
@@ -19,17 +19,17 @@ def find_mul_instances(data):
             index = i
             include_flag = True
     
-    string_to_parse = ''
+    string_to_parse: str = ''
     for indexes in indices_of_string_to_include:
         string_to_parse += data[indexes[0]:indexes[1]]
 
-    regex_mul_array = re.findall('(mul\(\d+,\d+\))', string_to_parse)
+    regex_mul_array: list[str] = re.findall('(mul\(\d+,\d+\))', string_to_parse)
     return regex_mul_array
 
-def calculate_result(array):
-    result = 0
+def calculate_result(array: list[str]):
+    result: int = 0
     for mul in array:
-        values = mul.replace("mul(", "").replace(")","").split(',')
+        values: tuple[str, str] = mul.replace("mul(", "").replace(")","").split(',')
         result += int(values[0]) * int(values[1])
     
     return result
