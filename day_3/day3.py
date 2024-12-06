@@ -1,4 +1,14 @@
-import re; import os
+import re; import os; import time
+
+def time_execution(func):
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        duration = end_time - start_time
+        print(f"{func.__name__} took {duration:.4f} seconds to execute.")
+        return result
+    return wrapper
 
 def get_data():
     with open(f'{os.path.dirname(__file__)}/day3_input.txt', 'r') as file:
@@ -38,6 +48,7 @@ def calculate_result(array: list[str]):
     
     return result
 
+@time_execution
 def solve():
     data = get_data()
     mul_val = find_mul_instances(data)
