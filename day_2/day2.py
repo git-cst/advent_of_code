@@ -1,4 +1,15 @@
 import os
+import time
+
+def time_execution(func):
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        duration = end_time - start_time
+        print(f"{func.__name__} took {duration:.4f} seconds to execute.")
+        return result
+    return wrapper
 
 def generate_arrays():
     array1 = []
@@ -12,39 +23,43 @@ def generate_arrays():
     
     return array1
 
-def safe(array: list, err: bool = None):
+def safe(array: list, err: bool = None) -> bool:
     if len(array) < 2:
         return True
 
-    trajectory = None
-    i = 0
-    while i < len(array) - 1:        
+    offending_indices = set()
+
+    for i in range(len(array) - 1):
         curr_element = int(array[i])
-        next_element = int(array[i+1])
+        next_element = int(array[i + 1])
 
         difference = abs(curr_element - next_element)
         if difference > 3 or difference == 0:
-            if not err:
-                recheck_array = array[:i + 1]+array[i + 2:]
-                return safe(recheck_array, True)
-            else:
-                return False
-        
+            offending_indices.add(i)
+            offending_indices.add(i + 1)
+
         if i > 0:
-            prev_element = int(array[i-1])
+            prev_element = int(array[i - 1])
             prev_diff = curr_element - prev_element
             curr_diff = next_element - curr_element
             if (prev_diff < 0 and curr_diff > 0) or (prev_diff > 0 and curr_diff < 0):
-                if not err:
-                    recheck_array = array[:i + 1]+array[i + 2:]
-                    return safe(recheck_array, True)
-                else:
-                    return False
-        
-        i += 1
-    
-    return True
+                offending_indices.add(i - 1)
+                offending_indices.add(i)
+                offending_indices.add(i + 1)
 
+    if not offending_indices:
+        return True
+    if err:
+        return False
+    
+    for index in offending_indices:
+        new_array = array[:index] + array[index + 1:]
+        if safe(new_array, True):
+            return True
+
+    return False
+
+@time_execution
 def solve():
     arrays = generate_arrays()
 

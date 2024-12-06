@@ -53,10 +53,15 @@ class TestAssumptions(unittest.TestCase):
 
         self.assertEqual(complies_with_logic, True)
 
-        matrix = [7, 6, 4, 2, 1]
+        matrix = [10, 9, 19, 8, 7, 6]
         complies_with_logic = safe(matrix)
 
         self.assertEqual(complies_with_logic, True)
+
+        matrix = [7, 6, 2, 2, 1]
+        complies_with_logic = safe(matrix)
+
+        self.assertEqual(complies_with_logic, False)
         
         matrix = [1, 2, 7, 8, 9]
         complies_with_logic = safe(matrix)
@@ -83,6 +88,15 @@ class TestAssumptions(unittest.TestCase):
 
         self.assertEqual(complies_with_logic, True)
 
+        matrix = [50, 1, 2, 3, 4, 5]
+        complies_with_logic = safe(matrix)
+
+        self.assertEqual(complies_with_logic, True)
+
+        matrix = [9, 12, 14, 16, 17, 18, 15]
+        complies_with_logic = safe(matrix)
+
+        self.assertEqual(complies_with_logic, True)
 
 if __name__ == "__main__":
     unittest.main()

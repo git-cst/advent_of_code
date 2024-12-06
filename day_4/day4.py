@@ -28,28 +28,45 @@ class Graph():
         self.num_cols = num_cols
 
     def generate_graph(self, data):
-        self.cells: Cell = [[Cell() for _ in range(self.num_rows)] for _ in range(self.num_cols)]
+        self.cells = [[Cell() for _ in range(self.num_rows)] for _ in range(self.num_cols)]
 
         for i in range(0, self.num_cols):
             for j in range(0, self.num_rows):
-                self.cells[i][j].value = data[i][j]
+                cell: Cell = self.cells[i][j]
+                cell.value = data[i][j]
 
                 # GENERATE THE ADJACENCIES
-                # LOGIC FOR CHECKING NE
+                # LOGIC FOR CHECKING NW
+                if i - 1 > 0 and j - 1 > 0:
+                    cell.nw = self.cells[i - 1][j - 1]
 
                 # LOGIC FOR CHECKING N
+                if i - 1 > 0:
+                    cell.nw = self.cells[i - 1][j]
 
-                # LOGIC FOR CHECKING NW
-
-                # LOGIC FOR CHECKING W
+                # LOGIC FOR CHECKING NE
+                if i - 1 > 0 and j + 1 < self.num_rows:
+                    cell.ne = self.cells[i - 1][j + 1]
 
                 # LOGIC FOR CHECKING E
-
-                # LOGIC FOR CHECKING SW
-
-                # LOGIC FOR CHECKING S
+                if j + 1 < self.num_rows:
+                    cell.e = self.cells[i][j + 1]
 
                 # LOGIC FOR CHECKING SE
+                if i + 1 < self.num_cols and j + 1 < self.num_rows:
+                    cell.se = self.cells[i + 1][j + 1]
+
+                # LOGIC FOR CHECKING S
+                if i + 1 < self.num_cols:
+                    cell.s = self.cells[i + 1][j]
+
+                # LOGIC FOR CHECKING SW
+                if i + 1 > self.num_cols and j - 1 > 0:
+                    cell.sw = self.cells[i + 1][j - 1]
+
+                # LOGIC FOR CHECKING W
+                if j - 1 > 0:
+                    cell.w = self.cells[i][j - 1]
 
 def check_adjacencies(graph: Graph):
     count_of_xmas = 0
@@ -65,6 +82,7 @@ def solve():
     graph = Graph(len(data), len(data[0]))
     graph.generate_graph(data)
     print(check_adjacencies(graph))
+    pass
 
 if __name__ == "__main__":
     solve()
