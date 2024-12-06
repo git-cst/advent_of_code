@@ -74,7 +74,7 @@ def solve():
             reordered_row = reorder(rule_set, row_as_list)
             reordered_results += median_val(reordered_row)
 
-    print(reordered_results)
+    print(f'Valid sets: {valid_results}\nReordered sets: {reordered_results}')
 
 if __name__ == '__main__':
     solve()
