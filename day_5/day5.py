@@ -1,5 +1,14 @@
-import os
+import os; import time
 
+def time_execution(func):
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        duration = end_time - start_time
+        print(f"{func.__name__} took {duration:.4f} seconds to execute.")
+        return result
+    return wrapper
 
 def generate_data_to_check() -> str:
     with open(f'{os.path.dirname(__file__)}/day5_input.txt', 'r') as file:
@@ -59,7 +68,8 @@ def reorder(rule_set: dict, input: list[str]) -> list[str]:
 
 def median_val(valid_input: list[str]) -> int:
     return int(valid_input[len(valid_input) // 2])
- 
+
+@time_execution
 def solve():
     data = generate_data_to_check()
     rule_set = generate_rule_set()
