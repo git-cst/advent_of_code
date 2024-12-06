@@ -13,33 +13,33 @@ def generate_arrays():
     return array1
 
 def safe(array: list, err: bool = None):
+    if len(array) < 2:
+        return True
+
     trajectory = None
     i = 0
-    while i < len(array) - 1:
-        if (i + 1) > len(array) - 1:
-            return True
-        
+    while i < len(array) - 1:        
         curr_element = int(array[i])
         next_element = int(array[i+1])
 
         difference = abs(curr_element - next_element)
         if difference > 3 or difference == 0:
             if not err:
-                array.pop(i+1)
-                return safe(array, True)
+                recheck_array = array[:i + 1]+array[i + 2:]
+                return safe(recheck_array, True)
             else:
                 return False
         
-        curr_trajectory = "DESC" if curr_element - next_element < 0 else "ASC"
-
-        if trajectory is None:
-            trajectory = curr_trajectory
-        elif curr_trajectory != trajectory:
-            if not err:
-                array.pop(i+1)
-                return safe(array, True)
-            else:
-                return False
+        if i > 0:
+            prev_element = int(array[i-1])
+            prev_diff = curr_element - prev_element
+            curr_diff = next_element - curr_element
+            if (prev_diff < 0 and curr_diff > 0) or (prev_diff > 0 and curr_diff < 0):
+                if not err:
+                    recheck_array = array[:i + 1]+array[i + 2:]
+                    return safe(recheck_array, True)
+                else:
+                    return False
         
         i += 1
     
