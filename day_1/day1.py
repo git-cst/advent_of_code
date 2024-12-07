@@ -1,5 +1,15 @@
 import os
 
+def time_execution(func):
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        duration = end_time - start_time
+        print(f"{func.__name__} took {duration:.4f} seconds to execute.")
+        return result
+    return wrapper
+
 def generate_arrays():
     array1 = []
     array2 = []
@@ -39,6 +49,7 @@ def generate_hash_map(array):
 
     return hash_map
 
+@time_execution
 def solve():
     array1, array2 = generate_arrays()
     quick_sort(array1, 0, len(array1)-1)
@@ -50,10 +61,7 @@ def solve():
         distance += abs(int(array1[i]) - int(array2[i]))
         similarity_score += int(array1[i]) * hash_map.get(array1[i], 0)
 
-
     print(f'Distance = {distance}, Similarity score = {similarity_score}')
-
-
-
+    
 if __name__ == '__main__':
     solve()
