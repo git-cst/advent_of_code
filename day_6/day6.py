@@ -21,7 +21,8 @@ def get_data():
 class Cell():
     def __init__(self, value = None):
         self.value: str = value
-        
+        # ADD A VALUE FOR NUMBER OF TIMES VISITED AND DIRECTION FROM WHICH IT WAS VISITED
+
         self.n: Cell = None
         self.s: Cell = None
         self.w: Cell = None
