@@ -23,21 +23,25 @@ def generate_rule_set() -> {list[str]}:
     data = data.split()
 
     complete_rule_set = {}
+    # Create a dictionary of the rules. Each key is the left most value and the key values are what it should be before.
     for row in data:
         greater_than, less_than = row.split("|")
 
+        # If the left most value already exists append the less than value if it doesn't exist to the key values.
         if greater_than in complete_rule_set:
             temp: list = complete_rule_set[greater_than]
             if less_than not in temp:
                 temp.append(less_than)
             complete_rule_set[greater_than] = sorted(temp)
-        else:
+        # Else create a new key value pair.
+        else: 
             complete_rule_set[greater_than] = [less_than]
     
     return complete_rule_set
 
 def valid(rule_set: dict, input: list[str]) -> bool:
     i = 0
+    # Loop through each value in the input list checking if all values after the current one satisfy the rules in the dictionary
     while i < len(input) - 1:
         key = input[i]
         for j in range(i + 1, len(input)):
@@ -48,11 +52,14 @@ def valid(rule_set: dict, input: list[str]) -> bool:
     return True
 
 def reorder(rule_set: dict, input: list[str]) -> list[str]:
+    # If list is already valid then exit early
     if valid(rule_set, input):
         return input
 
     array = input[:]
     
+    # Loop through each value in the input list checking if all values after the current one satisfy the rules in the dictionary.
+    # If a value is not valid then bubble sort.
     i = 0
     while i < len(array) - 1:
         key = array[i]
