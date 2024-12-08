@@ -55,25 +55,21 @@ def check_if_valid(key_values, target):
                 
     return False
 
-def check_if_valid_concat(key_values, target):
+def check_if_valid_recursively(key_values, target, result, index):
+    if index == len(key_values):
+        return result == target
+    
     operations = {
-        '+' : operator.add,
-        '*' : operator.mul,
-        '||': lambda x, y: int(str(x) + str(y))
+        '+'  : lambda x, y: int(x) + int(y),
+        '*'  : lambda x, y: int(x) * int(y),
+        '||' : lambda x, y: int(str(x) + str(y))
     }
 
-    combinations = generate_combinations(['+', '*', "||"], len(key_values) - 1)
-    
-    for combination in combinations:
-        result = int(key_values[0])
-        for i in range(1, len(key_values)):
-            result = operations[combination[i - 1]](result, key_values[i] if combination[i - 1] == '||' else int(key_values[i]))
-
-            if result == target:
-                return True
-                
-            if result > target:
-                break
+    for op, func in operations.items():
+        new_result = func(result, key_values[index])
+        
+        if check_if_valid_recursively(key_values, target, new_result, index + 1):
+            return True
 
     return False
 
@@ -86,7 +82,7 @@ def solve():
     for key in data.keys():
         if check_if_valid(data[key], int(key)):
             valid += int(key)
-        if check_if_valid_concat(data[key], int(key)):
+        if check_if_valid_recursively(data[key], int(key), data[key][0], 1):
             valid_with_concat += int(key)
 
     print(f"Number of valid tests with * & +    : {valid}\nNumber of valid tests with *, + & ||: {valid_with_concat}")
