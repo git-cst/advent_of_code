@@ -35,13 +35,17 @@ def generate_combinations(choices, n):
     return combinations
 
 def check_if_valid(key_values, target):
+    # Map operations to functions
     operations = {
         '+' : lambda x, y: int(x) + int(y),
         '*' : lambda x, y: int(x) * int(y)
     }
 
+    # Return all possible combinations
     combinations = generate_combinations(['+', '*'], len(key_values) - 1)
     
+    # Loop through combinations and perform respective operations underway
+    # If result is target return true if result > target skip that set of combinations
     for combination in combinations:
         result = int(key_values[0])
         for i in range(1, len(key_values)):
@@ -56,18 +60,22 @@ def check_if_valid(key_values, target):
     return False
 
 def check_if_valid_recursively(key_values, target, result, index):
+    # base case if we are at the end of the key_values return True / False
     if index == len(key_values):
         return result == target
     
+    # Map operations to functions
     operations = {
         '+'  : lambda x, y: int(x) + int(y),
         '*'  : lambda x, y: int(x) * int(y),
         '||' : lambda x, y: int(str(x) + str(y))
     }
 
+    # Perform functions on key_values
     for op, func in operations.items():
         new_result = func(result, key_values[index])
         
+        # If the result is true we can return
         if check_if_valid_recursively(key_values, target, new_result, index + 1):
             return True
 
