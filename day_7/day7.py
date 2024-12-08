@@ -1,4 +1,4 @@
-import os; import time; import operator
+import os; import time
 
 def time_execution(func):
     def wrapper(*args, **kwargs):
@@ -36,8 +36,8 @@ def generate_combinations(choices, n):
 
 def check_if_valid(key_values, target):
     operations = {
-        '+' : operator.add,
-        '*' : operator.mul
+        '+' : lambda x, y: int(x) + int(y),
+        '*' : lambda x, y: int(x) * int(y)
     }
 
     combinations = generate_combinations(['+', '*'], len(key_values) - 1)
