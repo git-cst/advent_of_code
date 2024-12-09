@@ -23,7 +23,7 @@ def generate_disk_map(data):
     index = 0
     disk_map = ''
     for _ in data:
-        file_length = str(id) * int(data[index])
+        file_length = (str(id) + '|') * int(data[index])
         free_disk_space = '.' * int(data[index+1])
 
         disk_map = disk_map + file_length + free_disk_space
