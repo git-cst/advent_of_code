@@ -24,11 +24,17 @@ def get_data():
     return data
 
 def generate_combinations(choices, n):
+    # Base case if we are returning a combination of length 0 then return nothing
     if n == 0:
         return [[]]
     
     combinations = []
+    # Loop through each choice of operations
     for choice in choices:
+        # Generate the other operations for n = n -1 -> n = 0.
+        # For example, if choice is '+' and n is 3 (so n becomes 2) then the sub combinations are ['+', '+'], ['+', '*'], ['*', '+'], ['*', '*']
+        # Then n = 1 is called and the sub combinations are ['+'] or ['*'] at which point all the combinations are appended together and returned.
+        # This creates a list of combinations that 2 * 4 * 2 = 16 in length (2 choices, 4 subcombinations at n = 2, and 2 subcombinations at n = 1)
         for sub_combination in generate_combinations(choices, n - 1):
             combinations.append([choice] + sub_combination)
     
