@@ -11,84 +11,67 @@ def time_execution(func):
     return wrapper
 
 def get_data():
-    data = {}
     with open(f'{os.path.dirname(__file__)}/day8_input.txt', 'r') as file:
         file_data: str = file.read()
     
     file_data = file_data.split('\n')
     return file_data
 
-def generate_node_coords(data):
+def generate_node_coords(data) -> dict:
     node_pair_dictionary = {}
-    populated_cells = {}
-
     # Loop through the entire grid
     # Generate a hashmap of occupied cells used for anti-node look up to see if it can be placed
     # Generate a hashmap of nodes: Where each key contains all the node coordinates
     for i in range(0, len(data)):
         for j in range(0, len(data[0])):
             if data[i][j] != '.':
-                populated_cells[(i, j)] = 1
                 if data[i][j] in node_pair_dictionary:
-                    temp: list[tuple] = node_pair_dictionary[data[i][j]]
-                    temp.append((i,j))
-                    node_pair_dictionary[data[i][j]] = temp
+                    node_pair_dictionary[data[i][j]].append((i, j))
                 else:
                     node_pair_dictionary[data[i][j]] = [(i, j)]
     
-    return node_pair_dictionary, populated_cells
+    return node_pair_dictionary
 
-def calculate_antinodes_recursive(node_coords, populated_cells, current_index=0, antinodes=None) -> list:
-    if antinodes is None:
-        antinodes = []
+def calculate_antinodes(node_coords: dict, populated_cells: set, x_max: int, y_max: int) -> set:
+    antinodes = set()
 
-    # Base case: If we reach the last node, stop recursion
-    if current_index >= len(node_coords) - 1:
-        return antinodes
+    for i in range(len(node_coords)):
+        for j in range(i + 1, len(node_coords)):
+            x1, y1 = node_coords[i]
+            x2, y2 = node_coords[j]
 
-    # Get the current base node
-    base_node = node_coords[current_index]
+            # Calculate change in x and y
+            delta_x, delta_y = x2 - x1, y2 - y1
 
-    # Recurse through remaining nodes
-    for i in range(current_index + 1, len(node_coords)):
-        # Pair the base node with another node
-        other_node = node_coords[i]
-        x1, y1 = base_node
-        x2, y2 = other_node
+            # Two potential antinodes
+            antinode1 = (x1 - delta_x, y1 - delta_y)  # on one side
+            antinode2 = (x2 + delta_x, y2 + delta_y)  # on the other side
 
-        # Compute the displacement vector
-        delta_x = x2 - x1
-        delta_y = y2 - y1
+            # Add antinodes if not already populated
+            if (antinode1 not in populated_cells and x_max >= antinode1[0] >= 0 and y_max >= antinode1[1] >= 0):
+                antinodes.add(antinode1)
+                populated_cells.add(antinode1)
 
-        # Calculate the antinode coordinates
-        antinode1 = (x1 - delta_x // 3, y1 - delta_y // 3)
-        # Check if the coordinates are out of bounds and the antinode does not already exist
-        if (antinode1[0] >= 0 and antinode1[1] >= 0) and antinode1 not in populated_cells:
-            antinodes.append(antinode1)
-            populated_cells[antinode1] = 1
+            if (antinode2 not in populated_cells and x_max >= antinode2[0] >= 0 and y_max >= antinode2[1] >= 0):
+                antinodes.add(antinode2)
+                populated_cells.add(antinode2)
 
-        # Repeat for antinode 2
-        antinode2 = (x2 - delta_x // 3, y2 - delta_y // 3)
-        if (antinode2[0] >= 0 or antinode2[1] >= 0) and antinode2 not in populated_cells:
-            antinodes.append(antinode2)
-            populated_cells[antinode2] = 1
+    return antinodes
 
-    # Recurse with the next base node
-    return calculate_antinodes_recursive(node_coords, populated_cells, current_index + 1, antinodes)
-
+@time_execution
 def solve():
     data = get_data()
-    node_pair_dictionary, populated_cells = generate_node_coords(data)
+    node_pair_dictionary = generate_node_coords(data)
 
-    antinodes = []
+    populated_cells = set()
+    x_max = len(data[0])
+    y_max = len(data)
+    all_antinodes = []
     for key in node_pair_dictionary.keys():
-        antinodes.append(calculate_antinodes_recursive(node_pair_dictionary[key], populated_cells))
+        antinodes = calculate_antinodes(node_pair_dictionary[key], populated_cells, x_max, y_max)
+        all_antinodes.extend(antinodes)
 
-    count_unique_antinodes = 0
-    for set_of_antinodes in antinodes:
-        count_unique_antinodes += len(set_of_antinodes)
-
-    print(count_unique_antinodes)
+    print(f"Unique antinodes: {len(all_antinodes)}")
 
 if __name__ == "__main__":
     solve()
