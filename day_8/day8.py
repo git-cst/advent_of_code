@@ -22,8 +22,6 @@ class Node_Grid():
         self.data = get_data()
         self.x_max = len(self.data[0]) - 1 
         self.y_max = len(self.data) - 1
-        self.populated_cells_part1 = set()
-        self.populated_cells_part2 = set()
 
     def generate_node_coords(self) -> dict:
         data = self.data
@@ -44,7 +42,6 @@ class Node_Grid():
         antinodes = set()
         x_max = self.x_max
         y_max = self.y_max
-        populated_cells = self.populated_cells_part1
 
         for i in range(len(node_coords)):
             for j in range(i + 1, len(node_coords)):
@@ -59,13 +56,11 @@ class Node_Grid():
                 antinode2 = (x2 + delta_x, y2 + delta_y)  # on the other side
 
                 # Add antinodes if not already populated and add that this position is now occupied
-                if (antinode1 not in populated_cells and x_max >= antinode1[0] >= 0 and y_max >= antinode1[1] >= 0):
+                if (x_max >= antinode1[0] >= 0 and y_max >= antinode1[1] >= 0):
                     antinodes.add(antinode1)
-                    populated_cells.add(antinode1)
 
-                if (antinode2 not in populated_cells and x_max >= antinode2[0] >= 0 and y_max >= antinode2[1] >= 0):
+                if (x_max >= antinode2[0] >= 0 and y_max >= antinode2[1] >= 0):
                     antinodes.add(antinode2)
-                    populated_cells.add(antinode2)
 
         return antinodes
 
@@ -73,7 +68,6 @@ class Node_Grid():
         antinodes = set()
         x_max = self.x_max
         y_max = self.y_max
-        populated_cells = self.populated_cells_part2
 
         for i in range(len(node_coords)):
             for j in range(i + 1, len(node_coords)):
@@ -94,16 +88,12 @@ class Node_Grid():
 
                     # Add antinodes if not already populated and add that this position is now occupied
                     if (x_max >= antinode1[0] >= 0 and y_max >= antinode1[1] >= 0):
-                        if antinode1 not in populated_cells:
-                            antinodes.add(antinode1)
-                            count_added_antinode1 += 1
-                            populated_cells.add(antinode1)
+                        antinodes.add(antinode1)
+                        count_added_antinode1 += 1
 
                     if (x_max >= antinode2[0] >= 0 and y_max >= antinode2[1] >= 0):
-                        if antinode2 not in populated_cells:
-                            antinodes.add(antinode2)
-                            count_added_antinode2 += 1
-                            populated_cells.add(antinode2)
+                        antinodes.add(antinode2)
+                        count_added_antinode2 += 1
 
                     # Check if there is more than 1 added antinode if so then add the original nodes as antinodes
                     if count_added_antinode2 >= 2 or count_added_antinode1 >= 2:
