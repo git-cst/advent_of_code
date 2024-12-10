@@ -39,24 +39,22 @@ def generate_disk_map(data):
 
     return "".join(parts)
 
-def defrag(array):
+def quick_defrag(array):
+    left, right = 0, len(array) - 1
     checksum = 0
-    left, right = 0, len(array)
-    while left < right:
-        curr_val = array[left]
-        if array[left] == '\u002E':
-            while right > left:
-                right -= 1
-                if right > left and array[right] != '\u002E':
-                    array[left], array[right] = array[right], array[left]
-                    right = len(array)
-                    break
-        left += 1
 
-    for index, unicode in enumerate(array):
-        if unicode == '\u002E':
-            break
-        checksum += index * generate_index(unicode)
+    while left <= right:
+        if array[left] == '\u002E':  # If left points to '.', look for a non-'.' from the right
+            if array[right] != '\u002E':
+                array[left], array[right] = array[right], array[left]
+                checksum += left * generate_index(array[left])  # Calculate checksum for the swapped value
+                right -= 1
+                left += 1
+            else:
+                right -= 1  # Decrement right until we find a non-'.'
+        else:
+            checksum += left * generate_index(array[left])  # Calculate checksum directly
+            left += 1
 
     return checksum
 
@@ -64,7 +62,7 @@ def defrag(array):
 def solve():
     data = get_data()
     disk_map = generate_disk_map(data)
-    print(defrag(list(disk_map)))
+    print(quick_defrag(list(disk_map)))
 
 if __name__ == "__main__":
     solve()
