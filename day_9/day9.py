@@ -43,17 +43,21 @@ def quick_defrag(array):
     left, right = 0, len(array) - 1
     checksum = 0
 
+    # Go from left to right.
+    # If value is '.' then begin looking for a value to swap with.
+    # If the value on the right is not '.' then swap, increment the checksum value and then move right on the left and left on the right.
+    # If the value on the left is not '.' increment the checksum value.
     while left <= right:
-        if array[left] == '\u002E':  # If left points to '.', look for a non-'.' from the right
+        if array[left] == '\u002E':
             if array[right] != '\u002E':
                 array[left], array[right] = array[right], array[left]
-                checksum += left * generate_index(array[left])  # Calculate checksum for the swapped value
+                checksum += left * generate_index(array[left])
                 right -= 1
                 left += 1
             else:
-                right -= 1  # Decrement right until we find a non-'.'
+                right -= 1
         else:
-            checksum += left * generate_index(array[left])  # Calculate checksum directly
+            checksum += left * generate_index(array[left])
             left += 1
 
     return checksum
