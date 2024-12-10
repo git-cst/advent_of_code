@@ -11,40 +11,67 @@ def time_execution(func):
     return wrapper
 
 def get_data():
-    data = {}
-    with open(f'{os.path.dirname(__file__)}/day7_input.txt', 'r') as file:
+    with open(f'{os.path.dirname(__file__)}/day8_input.txt', 'r') as file:
         file_data: str = file.read()
     
     file_data = file_data.split('\n')
-    return data
+    return file_data
 
-def generate_node_pairs(data):
+def generate_node_coords(data) -> dict:
     node_pair_dictionary = {}
-    hashmap_of_populated_cells = {}
-    # create a set of all nodes e.g. there is a 3 node, a a node, a X node, etc.
-    # create all the pairings of these nodes as a dictionary containing tuples which are coordinate sets?
+    # Loop through the entire grid
+    # Generate a hashmap of occupied cells used for anti-node look up to see if it can be placed
+    # Generate a hashmap of nodes: Where each key contains all the node coordinates
+    for i in range(0, len(data)):
+        for j in range(0, len(data[0])):
+            if data[i][j] != '.':
+                if data[i][j] in node_pair_dictionary:
+                    node_pair_dictionary[data[i][j]].append((i, j))
+                else:
+                    node_pair_dictionary[data[i][j]] = [(i, j)]
     
-    return node_pair_dictionary, hashmap_of_populated_cells
+    return node_pair_dictionary
 
-def generate_anti_nodes(node_pair_dictionary: dict, hashmap_of_populated_cells: dict):
-    unique_anti_nodes = 0
-    
-    for key in node_pair_dictionary.keys():
-        for coordinate_set in node_pair_dictionary[key]:
-            pass
-            # generate anti nodes
-                # anti node positions can be described as the distance between each node and just - the first node and + on the second node.
-                # check if the created coordinates would result in a negative value (as such it would be invalid and go to next anti node creation)
-            # check if anti node would already be in already populated cells
-                # if yes then don't increment unique anti nodes
-                # if no then increment unique anti nodes and add the coordinates to the hashmap of populated cells
+def calculate_antinodes(node_coords: dict, populated_cells: set, x_max: int, y_max: int) -> set:
+    antinodes = set()
 
-    # DO STUFF
+    for i in range(len(node_coords)):
+        for j in range(i + 1, len(node_coords)):
+            x1, y1 = node_coords[i]
+            x2, y2 = node_coords[j]
 
-    return unique_anti_nodes
+            # Calculate change in x and y
+            delta_x, delta_y = x2 - x1, y2 - y1
 
+            # Two potential antinodes
+            antinode1 = (x1 - delta_x, y1 - delta_y)  # on one side
+            antinode2 = (x2 + delta_x, y2 + delta_y)  # on the other side
+
+            # Add antinodes if not already populated
+            if (antinode1 not in populated_cells and x_max >= antinode1[0] >= 0 and y_max >= antinode1[1] >= 0):
+                antinodes.add(antinode1)
+                populated_cells.add(antinode1)
+
+            if (antinode2 not in populated_cells and x_max >= antinode2[0] >= 0 and y_max >= antinode2[1] >= 0):
+                antinodes.add(antinode2)
+                populated_cells.add(antinode2)
+
+    return antinodes
+
+@time_execution
 def solve():
-    pass
+    data = get_data()
+    node_pair_dictionary = generate_node_coords(data)
+
+    populated_cells = set()
+    x_max = len(data[0])
+    y_max = len(data)
+    all_antinodes = []
+    for key in node_pair_dictionary.keys():
+        antinodes = calculate_antinodes(node_pair_dictionary[key], populated_cells, x_max, y_max)
+        all_antinodes.extend(antinodes)
+
+    print(f"Unique antinodes: {len(all_antinodes)}")
 
 if __name__ == "__main__":
     solve()

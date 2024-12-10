@@ -1,4 +1,4 @@
-import os
+import os; import time
 
 def time_execution(func):
     def wrapper(*args, **kwargs):
