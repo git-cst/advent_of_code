@@ -80,31 +80,28 @@ class Graph():
 
                 new_position: Cell                  = to_visit.pop(0)
                 visited.append(new_position)
-                current_position: Cell              = new_position
-                current_position.visited = True
+                position: Cell              = new_position
+                position.visited = True
 
                 current_value                       = int(new_position.value)
-                if current_value == 1:
-                    pass
-
                 if current_value == 9:
                     full_trail += 1
 
-                if current_position.n:
-                    if int(current_position.n.value) - current_value == 1: # NORTH
-                        neighbouring_positions.append(current_position.n)
+                if position.n:
+                    if int(position.n.value) - current_value == 1: # NORTH
+                        neighbouring_positions.append(position.n)
 
-                if current_position.s:
-                    if int(current_position.s.value) - current_value == 1: # SOUTH
-                        neighbouring_positions.append(current_position.s)
+                if position.s:
+                    if int(position.s.value) - current_value == 1: # SOUTH
+                        neighbouring_positions.append(position.s)
 
-                if current_position.w:
-                    if int(current_position.w.value) - current_value == 1: # WEST
-                        neighbouring_positions.append(current_position.w)
+                if position.w:
+                    if int(position.w.value) - current_value == 1: # WEST
+                        neighbouring_positions.append(position.w)
 
-                if current_position.e:
-                    if int(current_position.e.value) - current_value == 1: # EAST
-                        neighbouring_positions.append(current_position.e)
+                if position.e:
+                    if int(position.e.value) - current_value == 1: # EAST
+                        neighbouring_positions.append(position.e)
 
                 for position in neighbouring_positions:
                     if position not in visited and position not in to_visit:
@@ -112,9 +109,42 @@ class Graph():
             
             return full_trail
 
-        def get_trail_rating(start_position: Cell) -> int:
-            pass
-
+        def get_trail_rating(position: Cell) -> int:
+            def depth_first_search_of_trail(position: Cell, current_path=None) -> list:
+                if current_path is None:
+                    current_path = []
+                
+                # Prevent revisiting cells
+                if position in current_path:
+                    return []
+                
+                # Add current cell to path
+                current_path = current_path + [position]
+                current_value = int(position.value)
+                
+                # Check if this is a goal path (reached cell with value 9)
+                if current_value == 9:
+                    return [current_path]
+                
+                # Collect paths
+                goal_paths = []
+                
+                # Explore each direction
+                for next_pos in [position.n, position.s, position.w, position.e]:
+                    if next_pos and int(next_pos.value) - current_value == 1:
+                        # Recursive exploration
+                        sub_paths = depth_first_search_of_trail(next_pos, current_path)
+                        goal_paths.extend(sub_paths)
+                
+                return goal_paths
+            
+            unique_goal_paths = []
+            paths = depth_first_search_of_trail(position)
+            for path in paths:
+                if path not in unique_goal_paths:
+                    unique_goal_paths.append(path)
+            
+            return len(unique_goal_paths)
 
         total_trail_score = 0
         total_trail_rating = 0
@@ -124,13 +154,15 @@ class Graph():
                     total_trail_score += get_trail_score(self._cells[i][j])
                     total_trail_rating += get_trail_rating(self._cells[i][j])
 
-        return total_trail_score
+        return total_trail_score, total_trail_rating
 
 @time_execution
 def solve():
     data = get_data()
     topographic_map = Graph()
-    print(topographic_map.calculate_trails())
+    trail_information = topographic_map.calculate_trails()
+
+    print(f"Total trail score: {trail_information[0]}\nTotal trail rating: {trail_information[1]}")
 
 
 if __name__ == '__main__':
