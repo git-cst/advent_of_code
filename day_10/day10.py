@@ -74,35 +74,29 @@ class Graph():
             while unexplored:
                 neighbouring_positions = []
 
+                # Base case all paths are explored
                 if to_visit == []:
                     unexplored = False
                     continue
 
-                new_position: Cell                  = to_visit.pop(0)
+                # Get new position from to_visit to check
+                new_position: Cell = to_visit.pop(0)
                 visited.append(new_position)
-                position: Cell              = new_position
+                position: Cell = new_position
                 position.visited = True
 
-                current_value                       = int(new_position.value)
+                # If the value of a cell is 9 then trail summit reached and increment the full_trail variable
+                current_value = int(new_position.value)
                 if current_value == 9:
                     full_trail += 1
 
-                if position.n:
-                    if int(position.n.value) - current_value == 1: # NORTH
-                        neighbouring_positions.append(position.n)
+                # Loop through positions checking if there is a cell. If there is a cell at the position and it increments the value by 1 append to neighbouring positions
+                for position in [position.n, position.s, position.w, position.e]:
+                    if position:
+                        if int(position.value) - current_value == 1:
+                            neighbouring_positions.append(position)
 
-                if position.s:
-                    if int(position.s.value) - current_value == 1: # SOUTH
-                        neighbouring_positions.append(position.s)
-
-                if position.w:
-                    if int(position.w.value) - current_value == 1: # WEST
-                        neighbouring_positions.append(position.w)
-
-                if position.e:
-                    if int(position.e.value) - current_value == 1: # EAST
-                        neighbouring_positions.append(position.e)
-
+                # Check if the position is already visited or already added to to_visit. If not append to to_visit
                 for position in neighbouring_positions:
                     if position not in visited and position not in to_visit:
                         to_visit.append(position)       
@@ -122,22 +116,23 @@ class Graph():
                 current_path = current_path + [position]
                 current_value = int(position.value)
                 
-                # Check if this is a goal path (reached cell with value 9)
+                # If the value of a cell is 9 then trail summit reached return this path
                 if current_value == 9:
                     return [current_path]
                 
                 # Collect paths
                 goal_paths = []
                 
-                # Explore each direction
+                # Explore each direction checking if cell exists and the path is incremented by 1 if yes then we go to the next level of the search
                 for next_pos in [position.n, position.s, position.w, position.e]:
                     if next_pos and int(next_pos.value) - current_value == 1:
-                        # Recursive exploration
+                        # Extend the goal paths with the sub path (if summit reached then the sub path is the unique path)
                         sub_paths = depth_first_search_of_trail(next_pos, current_path)
                         goal_paths.extend(sub_paths)
                 
                 return goal_paths
             
+            # Clean up paths (checking if there are duplicates)
             unique_goal_paths = []
             paths = depth_first_search_of_trail(position)
             for path in paths:
