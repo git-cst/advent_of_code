@@ -47,34 +47,29 @@ def valid(rule_set: dict, input: list[str]) -> bool:
             return False
     return True
 
-def valid2(rule_set: dict, input: list[str]) -> bool:
-    for i in range(0, len(input)-1):
-        key = input[i]
-        val_to_check = input[i + 1]
-        if val_to_check not in rule_set[key]:
-            return False
-    return True
-
 def reorder(rule_set: dict, input: list[str]) -> list[str]:
-    # If list is already valid then exit early
+    # If the list is already valid, exit early
     if valid(rule_set, input):
         return input
 
     array = input[:]
-    
-    # Loop through each value in the input list checking if all values after the current one satisfy the rules in the dictionary.
-    # If a value is not valid then bubble sort.
     i = 0
+
     while i < len(array) - 1:
         key = array[i]
-        next_val = array[i + 1]
-        
-        if next_val not in rule_set.get(key, []):
-            array[i], array[i + 1] = array[i + 1], array[i]
-            i = 0
-            continue
-        
-        i += 1
+        value_to_check = array[i + 1]
+
+        if value_to_check not in rule_set.get(key, []):
+            # Propagate upwards to fix the violation
+            j = i
+            while j >= 0 and value_to_check not in rule_set.get(array[j], []):
+                array[j], array[j + 1] = array[j + 1], array[j]
+                j -= 1
+
+            # After propagation, revalidate the current segment
+            i = max(j, 0)  # Restart from the resolved position
+        else:
+            i += 1
     return array if valid(rule_set, array) else [0]
 
 def median_val(valid_input: list[str]) -> int:

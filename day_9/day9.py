@@ -132,7 +132,6 @@ def generate_checksum(disk_map):
 
     return checksum
 
-
 @time_execution
 def solve():
     data = get_data()

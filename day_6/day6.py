@@ -30,7 +30,7 @@ class Cell():
 
 class Graph():
     def __init__(self, num_rows, num_cols):
-        self._num_cols = num_rows
+        self._num_rows = num_rows
         self._num_cols = num_cols
         self._start_position = None
         self._path_length = 0
@@ -39,10 +39,10 @@ class Graph():
         return self._path_length
 
     def generate_graph(self, data) -> None:
-        self._cells  = [[Cell() for _ in range(self._num_cols)] for _ in range(self._num_cols)]
+        self._cells  = [[Cell() for _ in range(self._num_cols)] for _ in range(self._num_rows)]
 
         for i in range(0, self._num_cols):
-            for j in range(0, self._num_cols):
+            for j in range(0, self._num_rows):
                 cell: Cell = self._cells [i][j]
                 cell.value = data[i][j]
 
@@ -58,7 +58,7 @@ class Graph():
                     cell.e = self._cells [i][j + 1]
 
                 # LOGIC FOR CHECKING S
-                if i + 1 < self._num_cols:
+                if i + 1 < self._num_rows:
                     cell.s = self._cells [i + 1][j]
 
                 # LOGIC FOR CHECKING W
