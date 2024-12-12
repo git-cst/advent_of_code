@@ -40,15 +40,19 @@ def generate_rule_set() -> {list[str]}:
     return complete_rule_set
 
 def valid(rule_set: dict, input: list[str]) -> bool:
-    i = 0
-    # Loop through each value in the input list checking if all values after the current one satisfy the rules in the dictionary
-    while i < len(input) - 1:
+    for i in range(0, len(input)-1):
         key = input[i]
-        for j in range(i + 1, len(input)):
-            val_to_check = input[j]
-            if val_to_check not in rule_set[key]:
-                return False
-        i += 1
+        val_to_check = input[i + 1]
+        if val_to_check not in rule_set[key]:
+            return False
+    return True
+
+def valid2(rule_set: dict, input: list[str]) -> bool:
+    for i in range(0, len(input)-1):
+        key = input[i]
+        val_to_check = input[i + 1]
+        if val_to_check not in rule_set[key]:
+            return False
     return True
 
 def reorder(rule_set: dict, input: list[str]) -> list[str]:
