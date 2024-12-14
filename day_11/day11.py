@@ -84,6 +84,29 @@ def calculate_stone_length_dictionary(array: list, max_blinks: int) -> list:
 
     return sum([value for value in stones.values()])
 
+def calculate_stone_length_dictionary2(array: list, max_blinks: int) -> list:
+    stones = {}
+    for stone in array:
+        stones[stone] = 1
+
+    blinks = 0
+    while blinks < max_blinks:
+        new_stones = {}
+        for key, value in stones.items():
+            if key == '0':
+                new_stones['1'] = new_stones.get('1', 0) + value
+            elif len(key) % 2 == 0:
+                left, right = split_string_in_half(key, cache)
+                new_stones[left] = new_stones.get(left, 0) + value
+                new_stones[right] = new_stones.get(right, 0) + value
+            else:
+                new_stones[str(int(key)*2024)] = new_stones.get(str(int(key)*2024), 0) + value
+
+        stones = new_stones        
+        blinks += 1
+
+    return sum([value for value in stones.values()])
+
 @time_execution
 def solve():
     array = get_data()
@@ -93,7 +116,7 @@ def solve():
     print(f"Total length of stones after blinking {num_blinks} times: {length_of_stones}\n")
 
     num_blinks = 75
-    length_of_stones = calculate_stone_length_dictionary(array, num_blinks)
+    length_of_stones = calculate_stone_length_dictionary2(array, num_blinks)
     
     print(f"Total length of stones after blinking {num_blinks} times: {length_of_stones}\n")
 
