@@ -78,7 +78,6 @@ class Graph():
             if not check_cell:
                 return
 
-            cell.value = "X"
             if check_cell.value == "#":
                 if index < 3:
                     index += 1
