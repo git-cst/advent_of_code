@@ -12,7 +12,7 @@ def time_execution(func):
 
 def get_data():
     data = {}
-    with open(f'{os.path.dirname(__file__)}/day11_input.txt', 'r') as file:
+    with open(f'{os.path.dirname(__file__)}/day12_input.txt', 'r') as file:
         file_data: str = file.read()
     
     file_data = file_data.split('\n')
@@ -22,39 +22,55 @@ def get_data():
         array.append(value)
 
     return array
-
+      
 class Cell():
     def __init__(self):
         self.value : str = None
 
-        self.has_top_perimiter    : bool      = False
-        self.has_bottom_perimiter : bool      = False
-        self.has_left_perimiter   : bool      = False
-        self.has_right_perimiter  : bool      = False
+        self.n_perimiter : bool = True
+        self.s_perimiter : bool = True
+        self.w_perimiter : bool = True
+        self.e_perimiter : bool = True
+        self.perimiter_length: int = 0
 
         self.n: Cell = None
         self.s: Cell = None
         self.w: Cell = None
         self.e: Cell = None
+        
+        self.visited: bool = False
+
+class Region():
+    _instances = {}
+
+    def __init__(self, identifier):
+        self.cells: list[Cell]      = []
+        self.identifier: str        = identifier
+        self.perimiter_length: int  = 0
+
+        Region._instances[identifier] = self
+
+    def add_cell(self, cell):
+        self.cells.append(cell)
+
+    @classmethod
+    def exists(cls, identifier) -> bool:
+        return identifier in cls._instances
 
 class Map():
     def __init__(self):
         self._data: list            = get_data()
         self._num_rows: int         = len(self._data)
         self._num_cols: int         = len(self._data[0])
-        self._edge_dict: dict       = {}
-        self._val_count_dict: dict  = {}
+        self.regions: dict          = {}
 
     def generate_cells(self) -> None:
-        self._cells = [[Cell() for _ in self._num_cols] for _ in self._num_rows]
+        self._cells = [[Cell() for _ in range(self._num_cols)] for _ in range(self._num_rows)]
 
         for i in range(0, self._num_rows):
             for j in range(0, self._num_cols):
                 cell: Cell = self._cells[i][j]
                 cell.value = self._data[i][j]
-
-                # Increment count of values
-                self._val_count_dict[cell.value] = self._val_count_dict.get(cell.value, 0) + 1
 
                 # Logic for checking N
                 if i - 1 >= 0:
@@ -72,25 +88,84 @@ class Map():
                 if j - 1 >= 0:
                     cell.w = self._cells[i][j - 1]
 
-    def check_adjacencies(self):
+    def create_perimiters(self):
         for i in range(0, self._num_rows):
             for j in range(0, self._num_cols):
                 cell: Cell = self._cells[i][j]
+                current_value = cell.value
+                num_edges = 4
 
-                # TODO
-                # CHECK DIRECTIONS TO SEE IF SAME VALUE
-                # IF SAME VALUE THEN NO EDGE
-                # IF NOT SAME VALUE THEN EDGE
-                # ADD NUM EDGES TO EDGE DICT. KEY = CELL.VALUE AND VALUE IS NUM EDGES
+                directions = ['n', 'e', 's', 'w']
 
-    def calculate_fencing_cost(self):
-        fencing_cost = 0
-        for key, value in self._val_count_dict:
-            fencing_cost += self._edge_dict[key] * value
+                for direction in directions:
+                    check_cell = getattr(cell, direction, None)
+
+                    if check_cell:
+                        check_value = getattr(check_cell, 'value', None)
+
+                        if check_value == current_value:
+                            setattr(cell, f'{direction}_perimiter', False)
+                            num_edges -= 1
+                
+                cell.perimiter_length = num_edges
+
+    def create_regions(self):
+        for i in range(0, self._num_rows):
+            for j in range(0, self._num_cols):
+                self._cells[i][j].visited = False
+
+        self.regions.clear()
+
+        for i in range(0, self._num_rows):
+            for j in range(0, self._num_cols):
+                cell = self._cells[i][j]
+                if not cell.visited:
+                    self._explore_region(cell)
+
+        return self.regions
+
+    def _explore_region(self, start_cell: Cell):
+        if start_cell.visited == True:
+            return
+
+        if start_cell.value not in self.regions:
+            self.regions[start_cell.value] = []
+
+        current_region = Region(f"{start_cell.value}_region_{len(self.regions[start_cell.value])}")
+        self.regions[start_cell.value].append(current_region)
+
+        stack = [start_cell]
+        while stack:
+            cell = stack.pop()
+
+            if cell.visited == True or cell.value != start_cell.value:
+                continue
+
+            cell.visited = True
+            current_region.perimiter_length += cell.perimiter_length
+            current_region.add_cell(cell)
+
+            directions = ['n', 'e', 's', 'w']
+
+            for direction in directions:
+                check_cell = getattr(cell, direction, None)
+                if check_cell:
+                    if cell.value == getattr(check_cell, "value", None):
+                        stack.append(check_cell)
 
 @time_execution
 def solve():
-    pass
+    garden_map = Map()
+    garden_map.generate_cells()
+    garden_map.create_perimiters()
+    regions = garden_map.create_regions()
+    
+    cost = 0
+    for key, region_list in regions.items():
+        for region in region_list:
+            cost += len(region.cells) * region.perimiter_length
+
+    print(f'Cost of fencing is {cost}')
 
 if __name__ == '__main__':
     solve()
