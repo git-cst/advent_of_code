@@ -11,8 +11,7 @@ def time_execution(func):
     return wrapper
 
 def get_data():
-    data = {}
-    with open(f'{os.path.dirname(__file__)}/day12_input.txt', 'r') as file:
+    with open(f'{os.path.dirname(__file__)}/day12_testinput.txt', 'r') as file:
         file_data: str = file.read()
     
     file_data = file_data.split('\n')
@@ -26,12 +25,12 @@ def get_data():
 class Cell():
     def __init__(self):
         self.value : str = None
+        self.perimiter_length: int = 0
 
         self.n_perimiter : bool = True
         self.s_perimiter : bool = True
         self.w_perimiter : bool = True
         self.e_perimiter : bool = True
-        self.perimiter_length: int = 0
 
         self.n: Cell = None
         self.s: Cell = None
@@ -47,11 +46,25 @@ class Region():
         self.cells: list[Cell]      = []
         self.identifier: str        = identifier
         self.perimiter_length: int  = 0
+        self.num_sides: int         = 0
 
         Region._instances[identifier] = self
 
     def add_cell(self, cell):
         self.cells.append(cell)
+
+    def calculate_boundary(self):
+        
+        directions = ['n', 'e', 's', 'w']
+        boundary_sides = 0
+        
+        for cell in self.cells:
+            # CREATE LOGIC TO UNDERSTAND WHAT AN EDGE IS
+            pass
+                    
+        self.num_sides = boundary_sides
+            
+        return self.num_sides
 
     @classmethod
     def exists(cls, identifier) -> bool:
@@ -158,14 +171,16 @@ def solve():
     garden_map = Map()
     garden_map.generate_cells()
     garden_map.create_perimiters()
-    regions = garden_map.create_regions()
+    regions: dict[Region] = garden_map.create_regions()
     
-    cost = 0
+    cost_inner_outer    = 0
+    cost_outer          = 0
     for key, region_list in regions.items():
         for region in region_list:
-            cost += len(region.cells) * region.perimiter_length
+            cost_inner_outer    += len(region.cells) * region.perimiter_length
+            cost_outer          += len(region.cells) * region.calculate_boundary()
 
-    print(f'Cost of fencing is {cost}')
+    print(f'Cost of fencing with inner & outer perimiter: {cost_inner_outer}\nCost of fencing with outer perimiter: {cost_outer}')
 
 if __name__ == '__main__':
     solve()
