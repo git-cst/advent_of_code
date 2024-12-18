@@ -105,11 +105,11 @@ def min_moves_to_prize(buttons, prize_x, prize_y):
     
     # Initial state
     initial_button_counts = [0] * len(buttons)
+    min_moves = float('inf')
     heap.push(0, 0, 0, initial_button_counts)
     
     # Store all paths that reach the prize
     prize_paths = []
-    min_moves = float('inf')
     
     while len(heap) > 0:
         moves, current_x, current_y, button_counts = heap.pop()
@@ -126,7 +126,7 @@ def min_moves_to_prize(buttons, prize_x, prize_y):
                 prize_paths.append((moves, button_counts))
             continue
         
-        # Prune paths that have overshot the prize
+        # If overshot go next
         if current_x > prize_x and current_y > prize_y:
             continue
         
