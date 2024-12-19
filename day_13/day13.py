@@ -22,7 +22,7 @@ def get_data():
     array = []
     for value in file_data:
         # Extract numbers from string
-        parsed_value = re.findall("(\d+)", value)
+        parsed_value = re.findall(r"(\d+)", value)
         # If there is a value then assign them to variables
         if parsed_value:
             x_value, y_value = int(parsed_value[0]), int(parsed_value[1])
