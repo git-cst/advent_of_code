@@ -1,4 +1,8 @@
 import os; import time; import re
+from itertools import product
+from sympy import Eq, solve, symbols
+
+CONSTANT = 10_000_000_000_000
 
 def time_execution(func):
     def wrapper(*args, **kwargs):
@@ -17,14 +21,14 @@ def get_data():
     file_data = file_data.split('\n')
     array = []
     for value in file_data:
-        # If there is no value to be parsed
-        if not value:
-            array.append((buttons, prize_x, prize_y))
         # Extract numbers from string
         parsed_value = re.findall("(\d+)", value)
         # If there is a value then assign them to variables
         if parsed_value:
             x_value, y_value = int(parsed_value[0]), int(parsed_value[1])
+        # If there is no value to be parsed
+        if not value:
+            array.append((buttons, prize_x, prize_y))
         # If button A line then overwrite buttons variable
         elif re.search("Button A", value):
             buttons = [(x_value, y_value)]
@@ -103,7 +107,7 @@ class BinaryHeap():
     def __len__(self) -> int:
         return len(self._heap)
 
-def min_moves_to_prize(buttons, prize_x, prize_y) -> list[tuple[int, dict[int]]]:
+def heap_min_moves_to_prize(buttons, prize_x, prize_y) -> list[tuple[int, dict[int]]]:
     # Track visited states to prevent redundant exploration
     visited = set()
     heap = BinaryHeap()
@@ -155,19 +159,57 @@ def min_moves_to_prize(buttons, prize_x, prize_y) -> list[tuple[int, dict[int]]]
     
     return prize_paths
 
-@time_execution
-def solve():
-    data = get_data()
-    tokens = 0
-    for index, (buttons, prize_x, prize_y) in enumerate(data):
-        print(f'{index + 1:03} / 320')
-        result = min_moves_to_prize(buttons, prize_x, prize_y)
-        if result:
-            num_button_a = min(result, key=lambda x: x[1][0])[1][0]
-            num_button_b = min(result, key=lambda x: x[1][0])[1][1]
-            tokens += num_button_a * 3 + num_button_b
+def min_moves_to_prize_part1(buttons, prize_x, prize_y):
+    tokens = []
+    button_a_x, button_a_y = buttons[0][0], buttons[0][1]
+    button_b_x, button_b_y = buttons[1][0], buttons[1][1]
+    button_presses = list(product(range(101), range(101)))
+    for (push_a, push_b) in button_presses:
+        state_x = button_a_x * push_a + button_b_x * push_b
+        state_y = button_a_y * push_a + button_b_y * push_b
 
-    print(tokens)
+        if state_x == prize_x and state_y == prize_y:
+            state_cost = 3 * push_a + push_b
+            tokens.append(state_cost)
+    
+    return min(tokens) if tokens else 0
+
+def min_moves_to_prize_part2(buttons, prize_x, prize_y):
+    button_a_x, button_a_y = buttons[0][0], buttons[0][1]
+    button_b_x, button_b_y = buttons[1][0], buttons[1][1]
+    a, b = symbols('a b', integer = True)
+    equation_1 = Eq(button_a_x * a + button_b_x * b, prize_x)
+    equation_2 = Eq(button_a_y * a + button_b_y * b, prize_y)
+    solution = solve((equation_1, equation_2), (a, b))
+    return (solution[a] * 3 + solution[b]) if solution else 0
+    
+@time_execution
+def main():
+    data = get_data()
+    part1_tokens = 0
+    part2_tokens = 0
+    # for index, (buttons, prize_x, prize_y) in enumerate(data):
+    #     print(f'{index + 1:03} / 320')
+    #     result = heap_min_moves_to_prize(buttons, prize_x, prize_y)
+    #     if result:
+    #         num_button_a = min(result, key=lambda x: x[1][0])[1][0]
+    #         num_button_b = min(result, key=lambda x: x[1][0])[1][1]
+    #         tokens += num_button_a * 3 + num_button_b
+
+    for index, (buttons, prize_x, prize_y) in enumerate(data):
+        print(f'Part1: {index + 1:03} / 320')
+        part1_tokens += min_moves_to_prize_part1(buttons, prize_x, prize_y)
+
+    print('Part1 Complete')
+    print('------------------------------------------------------')
+
+    for index, (buttons, prize_x, prize_y) in enumerate(data):
+        print(f'Part2: {index + 1:03} / 320')
+        part2_tokens += min_moves_to_prize_part2(buttons, prize_x + CONSTANT, prize_y + CONSTANT)
+
+    print('Part2 Complete')
+    print('------------------------------------------------------')
+    print(f'It costs {part1_tokens} in part 1.\nIt costs {part2_tokens} in part 2.')
 
 if __name__ == "__main__":
-    solve()
+    main()
