@@ -17,32 +17,37 @@ def get_data():
     file_data = file_data.split('\n')
     array = []
     for value in file_data:
-        parsed_value = re.findall("(\d+)", value)
-        if parsed_value:
-            x_value, y_value = int(parsed_value[0]), int(parsed_value[1])
+        # If there is no value to be parsed
         if not value:
             array.append((buttons, prize_x, prize_y))
+        # Extract numbers from string
+        parsed_value = re.findall("(\d+)", value)
+        # If there is a value then assign them to variables
+        if parsed_value:
+            x_value, y_value = int(parsed_value[0]), int(parsed_value[1])
+        # If button A line then overwrite buttons variable
         elif re.search("Button A", value):
             buttons = [(x_value, y_value)]
+        # If button B line then append to buttons variable
         elif re.search("Button B", value):
             buttons.append((x_value, y_value))
+        # If prize line then assign prize_x, prize_y 
         elif re.search("Prize", value):
             prize_x = x_value
             prize_y = y_value
-
     return array
 
 class BinaryHeap():
     def __init__(self):
         self._heap: list = []
 
-    def push(self, moves: int, x: int, y: int, button_counts: int):
+    def push(self, moves: int, x: int, y: int, button_counts: dict[int]) -> None:
         # Add a new element to the Heap
         entry = (moves, x, y, button_counts)
         self._heap.append(entry)
         self._sift_up(len(self._heap) - 1)
     
-    def pop(self):
+    def pop(self) -> tuple[int, int, int, dict]:
         # Remove and return the smallest element in the heap (prioritized by moves)
         if not self._heap:
             raise IndexError("Heap is empty")
@@ -57,7 +62,7 @@ class BinaryHeap():
         
         return self._heap[0]
     
-    def _sift_up(self, index):
+    def _sift_up(self, index: int) -> None:
         # Move an element up to maintain the heap property
         parent = (index - 1) // 2
         
@@ -70,7 +75,7 @@ class BinaryHeap():
             index = parent
             parent = (index - 1) // 2
     
-    def _sift_down(self, index):
+    def _sift_down(self, index: int) -> None:
         # Move an element down to maintain heap property
         while True:
             smallest = index
@@ -95,10 +100,10 @@ class BinaryHeap():
             self._heap[index], self._heap[smallest] = self._heap[smallest], self._heap[index]
             index = smallest
     
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._heap)
 
-def min_moves_to_prize(buttons, prize_x, prize_y):
+def min_moves_to_prize(buttons, prize_x, prize_y) -> list[tuple[int, dict[int]]]:
     # Track visited states to prevent redundant exploration
     visited = set()
     heap = BinaryHeap()
