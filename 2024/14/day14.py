@@ -30,13 +30,19 @@ class Bathroom():
         self.num_cols = 11#101
         self.num_rows = 7#103
 
-        self.x_safety = ceil(self.num_cols / 2)
-        self.y_safety = ceil(self.num_rows / 2)
+class Bathroom():
+    def __init__(self):
+        self.num_cols = 11
+        self.num_rows = 7 
+
+        self.x_safety = self.num_cols // 2 + 1
+        self.y_safety = self.num_rows // 2 + 1
     
-        self.upper_left_quadrant = [(0, self.y_safety + 1), (self.x_safety - 1, self.num_rows)]
+        # Now our quadrants would be:
+        self.upper_left_quadrant = [(1, self.y_safety + 1), (self.x_safety - 1, self.num_rows)]
         self.upper_right_quadrant = [(self.x_safety + 1, self.y_safety + 1), (self.num_cols, self.num_rows)]
-        self.lower_left_quadrant = [(0, 0), (self.x_safety - 1, self.y_safety - 1)]
-        self.lower_right_quadrant = [(self.x_safety + 1, 0), (self.num_cols, self.y_safety - 1)]
+        self.lower_left_quadrant = [(1, 1), (self.x_safety - 1, self.y_safety - 1)]
+        self.lower_right_quadrant = [(self.x_safety + 1, 1), (self.num_cols, self.y_safety - 1)]
 
     def safety_factor(self, robots: list):
         num_upper_left, num_upper_right = 0, 0
@@ -75,27 +81,29 @@ class Robot():
 
         self.x_upper_bound = grid.num_cols
         self.y_upper_bound = grid.num_rows
-        self.x_lower_bound = 0
-        self.y_lower_bound = 0
+        self.x_lower_bound = 1
+        self.y_lower_bound = 1
 
     def move(self):
         # Handle x movement
         new_x = self.position_x + self.velocity_x
         if new_x > self.x_upper_bound:
-            self.position_x = new_x % self.x_upper_bound
-        elif new_x < 0:
-            movement = (new_x % self.x_upper_bound)
-            self.position_y = (new_x % self.x_upper_bound + self.x_upper_bound) % self.x_upper_bound
+            # If we exceed the upper bound, wrap to beginning
+            # e.g., if we're at position 11 and move +2, we should end up at position 2
+            self.position_x = new_x - self.x_upper_bound
+        elif new_x < self.x_lower_bound:
+            # If we go below lower bound, wrap to end
+            # e.g., if we're at position 1 and move -2, we should end up at position 10
+            self.position_x = self.x_upper_bound - (self.x_lower_bound - new_x)
         else:
             self.position_x = new_x
 
         # Handle y movement
         new_y = self.position_y + self.velocity_y
         if new_y > self.y_upper_bound:
-            self.position_y = new_y % self.y_upper_bound
-        elif new_y < 0:
-            movement = (new_y % self.y_upper_bound)
-            self.position_y = (new_y % self.y_upper_bound + self.y_upper_bound) % self.y_upper_bound
+            self.position_y = new_y - self.y_upper_bound
+        elif new_y < self.y_lower_bound:
+            self.position_y = self.y_upper_bound - (self.y_lower_bound - new_y)
         else:
             self.position_y = new_y
 
@@ -129,9 +137,8 @@ def main():
         print(f'Grid for tick {tick}:')
         print_grid(robots, grid)
 
-    print_grid(robots, grid)
-
-    print(grid.safety_factor(robots))
+    print('----------------------------------------------------------')
+    print(f'The grid safety factor is {grid.safety_factor(robots)}')
 
 if __name__ == '__main__':
     main()
