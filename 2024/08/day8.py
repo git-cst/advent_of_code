@@ -73,6 +73,8 @@ class Node_Grid():
             for j in range(i + 1, len(node_coords)):
                 x1, y1 = node_coords[i]
                 x2, y2 = node_coords[j]
+                antinodes.add((x1, y1))
+                antinodes.add((x2, y2))
 
                 # Calculate change in x and y
                 delta_x, delta_y = x2 - x1, y2 - y1
