@@ -102,7 +102,7 @@ def calculate_stone_length_dictionary2(array: list, max_blinks: int) -> list:
             else:
                 new_stones[str(int(key)*2024)] = new_stones.get(str(int(key)*2024), 0) + value
 
-        stones = new_stones        
+        stones = new_stones
         blinks += 1
 
     return sum([value for value in stones.values()])

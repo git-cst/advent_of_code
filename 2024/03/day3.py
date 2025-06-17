@@ -20,13 +20,13 @@ def find_mul_instances(data: str):
     regex_mul_array: list[str] = re.findall(r'(mul\(\d+,\d+\))', data)
     return regex_mul_array
 
-def find_mul_instances_do_criteria(data: str):
-    indices_of_string_to_include: list[str] = []
+def find_mul_instances_do_criteria(data: str) -> list[str]:
+    indices_of_string_to_include: list[tuple[int, int]] = []
     index: int = 0
     include_flag: bool = True
     for i in range(len(data)-1):
         if data[i:i+7] == "don't()" and include_flag:
-            indices_of_string_to_include.append([index, i])
+            indices_of_string_to_include.append((index, i))
             include_flag = False
 
         if data[i:i+4] == "do()" and not include_flag:
@@ -40,10 +40,10 @@ def find_mul_instances_do_criteria(data: str):
     regex_mul_array: list[str] = re.findall(r'(mul\(\d+,\d+\))', string_to_parse)
     return regex_mul_array
 
-def calculate_result(array: list[str]):
+def calculate_result(array: list[str]) -> int:
     result: int = 0
     for mul in array:
-        values: tuple[str, str] = mul.replace("mul(", "").replace(")","").split(',')
+        values: list[str] = mul.replace("mul(", "").replace(")","").split(',')
         result += int(values[0]) * int(values[1])
     
     return result

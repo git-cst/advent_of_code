@@ -14,12 +14,12 @@ def get_data():
     with open(f'{os.path.dirname(__file__)}/day4_input.txt', 'r') as file:
         data: str = file.read()
     
-    data = data.split()
+    data_list: list[str] = data.split()
 
-    return data
+    return data_list
 
 class Cell():
-    def __init__(self, value = None):
+    def __init__(self, value: str = ""):
         self.value: str = value
         
         self.n: Cell = None

@@ -197,14 +197,14 @@ def main():
     #         tokens += num_button_a * 3 + num_button_b
 
     for index, (buttons, prize_x, prize_y) in enumerate(data):
-        print(f'Part1: {index + 1:03} / 320')
+        print(f'Part1: {index + 1:03} / 320. Current cost: {part1_tokens}')
         part1_tokens += min_moves_to_prize_part1(buttons, prize_x, prize_y)
 
     print('Part1 Complete')
     print('------------------------------------------------------')
 
     for index, (buttons, prize_x, prize_y) in enumerate(data):
-        print(f'Part2: {index + 1:03} / 320')
+        print(f'Part2: {index + 1:03} / 320. Current cost: {part2_tokens}')
         part2_tokens += min_moves_to_prize_part2(buttons, prize_x + CONSTANT, prize_y + CONSTANT)
 
     print('Part2 Complete')

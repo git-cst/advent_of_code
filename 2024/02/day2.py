@@ -23,7 +23,7 @@ def generate_arrays():
     
     return array1
 
-def safe(array: list, err: bool = None) -> bool:
+def safe(array: list, err: bool = False) -> bool:
     if len(array) < 2:
         return True
 
