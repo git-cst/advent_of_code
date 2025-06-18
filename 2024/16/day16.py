@@ -12,20 +12,17 @@ def time_execution(func):
     return wrapper
 
 def get_data(type=''):
-    with open(f'{os.path.dirname(__file__)}/day14_{type}input.txt', 'r') as file:
+    file_path = os.path.join(os.path.dirname(__file__), f'day16_{type}input.txt')
+    with open(file_path, 'r') as file:
         file_data: str = file.read()
     
     file_data = file_data.split('\n')
-
-    ret_data = []
-    for row in file_data:
-        ret_data.append(row.split())
     
-    return ret_data
+    return file_data
 
 class Cell():
-    def __init__(self, value: str = ""):
-        self.value = value
+    def __init__(self):
+        self.value = ""
 
         self.n_neighbour = None
         self.e_neighbour = None
@@ -34,8 +31,17 @@ class Cell():
 
         self.blocking = False
 
+    def set_value(self, value):
+        self.value = value
+
+    def set_position(self, position: tuple[int, int]):
+        self.x_pos, self.y_pos = position
+
     def set_blocking(self):
         self.blocking = True
+
+    def get_value(self):
+        return self.value
 
     def is_blocking(self):
         return self.blocking
@@ -53,13 +59,16 @@ class Grid():
         for i in range(0, num_cols):
             for j in range(0, num_rows):
                 cell: Cell = self.cells[i][j]
-                cell.value = data[i][j]
+                cell.set_value(data[i][j])
+                cell.set_position((i, j))
 
-                if cell.value == "S":
+                cell_value = cell.get_value()
+
+                if cell_value == "S":
                     self.start_point = cell
-                elif cell.value == "E":
+                elif cell_value == "E":
                     self.end_point = cell
-                elif cell.value == "#":
+                elif cell_value == "#":
                     cell.set_blocking()
 
                 # Logic for checking N
@@ -79,7 +88,14 @@ class Grid():
                     cell.w_neighbour = self.cells[i][j - 1]
 
     def evaluate_paths(self):
-        self.valid_paths = []
+        stack = []
+        valid_paths = []
+
+        start_position = self.start_point
+        stack.append(start_position, valid_paths)
+
+        while stack:
+            current, path = stack.pop()
 
     def best_path_score(self) -> int:
         return 
@@ -89,8 +105,7 @@ def main():
     num_cols = len(data[0])
     num_rows = len(data)
 
-    grid = Grid()
-    grid.generate_grid(num_cols, num_rows, data)
+    grid = Grid(num_cols, num_rows, data)
     grid.evaluate_paths()
     print(grid.best_path_score())
 
