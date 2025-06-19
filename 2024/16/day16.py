@@ -180,6 +180,7 @@ class Grid():
                 return current_state.path, current_state.turn_count
 
             state_key = (current_state.position, current_state.direction)
+            # If the cost is worse or equal to the the best cost then we skip as it cannot be better than the optimal path
             if state_key in best_costs and best_costs[state_key] <= current_state.g_cost:
                 continue
             best_costs[state_key] = current_state.g_cost
@@ -251,6 +252,8 @@ class Grid():
                 continue
 
             state_key = (current_state.position, current_state.direction)
+            # If the cost is worse than the best cost then we skip. 
+            # If it is equal it could still be an optimal path as such we should keep it.
             if state_key in best_costs and best_costs[state_key] < current_state.g_cost:
                 continue
             best_costs[state_key] = current_state.g_cost
