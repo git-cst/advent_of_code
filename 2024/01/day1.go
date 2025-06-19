@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"os"
@@ -83,4 +84,68 @@ func main() {
 
 	solve(data)
 	timer.Stop()
+}
+
+type Node struct {
+	value any
+	next  *Node
+}
+
+func NewNode(value any) *Node {
+	return &Node{
+		value: value,
+		next:  nil,
+	}
+}
+
+type Queue struct {
+	head *Node
+	tail *Node
+	size int
+}
+
+func NewQueue() *Queue {
+	return &Queue{
+		head: nil,
+		tail: nil,
+		size: 0,
+	}
+}
+
+func (q *Queue) Put(value interface{}) {
+	newNode := NewNode(value)
+
+	if q.tail == nil { // Empty queue
+		q.head = newNode
+		q.tail = newNode
+	} else {
+		q.tail.next = newNode
+		q.tail = newNode
+	}
+	q.size++
+}
+
+func (q *Queue) Get() (interface{}, error) {
+	if q.head == nil {
+		return nil, errors.New("queue is empty")
+	}
+
+	value := q.head.value
+	q.head = q.head.next
+
+	// If queue becomes empty, reset tail
+	if q.head == nil {
+		q.tail = nil
+	}
+
+	q.size--
+	return value, nil
+}
+
+func (q *Queue) IsEmpty() bool {
+	return q.head == nil
+}
+
+func (q *Queue) Size() int {
+	return q.size
 }
