@@ -176,7 +176,7 @@ class Grid():
         while open_set:
             current_state: State = heapq.heappop(open_set)
 
-            if current_state.position == self.end_point:
+            if current_state.position == self.end_point: # uses __eq__ dunder in Cell
                 return current_state.path, current_state.turn_count
 
             state_key = (current_state.position, current_state.direction)
@@ -186,7 +186,7 @@ class Grid():
 
             possible_moves = directions[current_state.direction]
             for direction, turn_cost in possible_moves:
-                neighbour = getattr(current_state.position, direction, None)
+                neighbour: Cell = getattr(current_state.position, direction, None)
                 
                 if (neighbour and 
                     not neighbour.is_blocking() and 
@@ -205,7 +205,7 @@ class Grid():
                         turn_count=new_turn_count
                     )
                     
-                    heapq.heappush(open_set, new_state)
+                    heapq.heappush(open_set, new_state) # reorders heap
         
         return None, None  # No path found
 
