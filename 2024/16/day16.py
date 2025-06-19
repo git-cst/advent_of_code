@@ -24,18 +24,22 @@ class Cell():
     def __init__(self):
         self.value = ""
 
-        self.n_neighbour = None
-        self.e_neighbour = None
-        self.s_neighbour = None
-        self.w_neighbour = None
+        self.n = None
+        self.e = None
+        self.s = None
+        self.w = None
 
         self.blocking = False
+
 
     def set_value(self, value):
         self.value = value
 
     def set_position(self, position: tuple[int, int]):
         self.x_pos, self.y_pos = position
+
+    def __eq__(self, other):
+        return self.x_pos, self.y_pos == other.x_pos, other.y_pos
 
     def set_blocking(self):
         self.blocking = True
@@ -73,29 +77,46 @@ class Grid():
 
                 # Logic for checking N
                 if i - 1 >= 0:
-                    cell.n_neighbour = self.cells[i - 1][j]
+                    cell.n = self.cells[i - 1][j]
 
                 # Logic for checking E
                 if j + 1 < num_cols:
-                    cell.e_neighbour = self.cells[i][j + 1]
+                    cell.e = self.cells[i][j + 1]
 
                 # Logic for checking S
                 if i + 1 < num_rows:
-                    cell.s_neighbour = self.cells[i + 1][j]
+                    cell.s = self.cells[i + 1][j]
 
                 # Logic for checking W
                 if j - 1 >= 0:
-                    cell.w_neighbour = self.cells[i][j - 1]
+                    cell.w = self.cells[i][j - 1]
 
     def evaluate_paths(self):
         stack = []
         valid_paths = []
 
         start_position = self.start_point
-        stack.append(start_position, valid_paths)
+        number_of_turns = 0
+        path_information = [(start_position, number_of_turns)]
+        curr_direction = "e"
+        stack.append(start_position, path_information, curr_direction)
+
+        directions = {}
+
+        directions["n"] = [("n", 0), ("e", 1), ("w", 1)]
+        directions["e"] = [("e", 0), ("s", 1), ("n", 1)]
+        directions["s"] = [("s", 0), ("w", 1), ("e", 1)]
+        directions["w"] = [("w", 0), ("s", 1), ("n", 1)]
 
         while stack:
-            current, path = stack.pop()
+            current, (path, number_of_turns), curr_direction = stack.pop()
+
+            if current == self.end_point:
+                valid_paths.append((path, number_of_turns))
+
+            for direction, cost in directions[curr_direction]:
+                neighbour: Cell = getattr(current, direction, None)
+                if neighbour and not neighbour.is_blocking():
 
     def best_path_score(self) -> int:
         return 
