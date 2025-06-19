@@ -283,6 +283,7 @@ class Grid():
         
         return tiles_on_optimal_paths, optimal_cost
 
+@time_execution
 def main():
     data = get_data()
     num_cols = len(data[0])
