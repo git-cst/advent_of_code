@@ -152,7 +152,7 @@ class Grid():
 
         return current_best_score
 
-    def evaluate_paths_astar(self):
+    def get_best_path_astar(self):
         open_set = []
         best_costs = {}
 
@@ -209,14 +209,87 @@ class Grid():
         
         return None, None  # No path found
 
+    def get_optimal_tiles_astar(self):
+        open_set = []
+        best_costs = {}
+        optimal_cost = float("inf")
+        tiles_on_optimal_paths = set()
+
+        initial_state = State(
+            position=self.start_point,
+            direction="e",
+            g_cost=0,
+            f_cost=self.manhatten_distance_heuristic(self.start_point, self.end_point),
+            path=[self.start_point],
+            turn_count=0
+        )
+
+        heapq.heappush(open_set, initial_state)
+        directions = {
+            "n": [("n", 0), ("e", 1), ("w", 1)],
+            "e": [("e", 0), ("s", 1), ("n", 1)],
+            "s": [("s", 0), ("w", 1), ("e", 1)],
+            "w": [("w", 0), ("s", 1), ("n", 1)]
+        }
+
+        while open_set:
+            current_state: State = heapq.heappop(open_set)
+
+            # This path is worse than the best path
+            if current_state.g_cost > optimal_cost: 
+                continue
+                
+            # We reached the goal
+            if current_state.position == self.end_point: # Uses __eq__ dunder in Cell
+                if current_state.g_cost < optimal_cost:
+                    # Found a better path - reset our tile set
+                    optimal_cost = current_state.g_cost
+                    tiles_on_optimal_paths = set(current_state.path)
+                elif current_state.g_cost == optimal_cost:
+                    # Found another optimal path - add its tiles
+                    tiles_on_optimal_paths.update(current_state.path)
+                continue
+
+            state_key = (current_state.position, current_state.direction)
+            if state_key in best_costs and best_costs[state_key] < current_state.g_cost:
+                continue
+            best_costs[state_key] = current_state.g_cost
+
+            possible_moves = directions[current_state.direction]
+            for direction, turn_cost in possible_moves:
+                neighbour: Cell = getattr(current_state.position, direction, None)
+                
+                if (neighbour and 
+                    not neighbour.is_blocking() and 
+                    neighbour not in current_state.path):
+
+                    new_g_cost = current_state.g_cost + 1 + (turn_cost * 1000)  # 1 for move, turn penalty
+                    new_f_cost = new_g_cost + self.manhatten_distance_heuristic(neighbour, self.end_point)
+                    new_turn_count = current_state.turn_count + turn_cost
+                    
+                    new_state = State(
+                        position=neighbour,
+                        direction=direction,
+                        g_cost=new_g_cost,
+                        f_cost=new_f_cost,
+                        path=current_state.path + [neighbour],
+                        turn_count=new_turn_count
+                    )
+                    
+                    heapq.heappush(open_set, new_state) # reorders heap
+        
+        return tiles_on_optimal_paths, optimal_cost
+
 def main():
     data = get_data()
     num_cols = len(data[0])
     num_rows = len(data)
 
     grid = Grid(num_cols, num_rows, data)
-    best_path, turn_count = grid.evaluate_paths_astar()
+    best_path, turn_count = grid.get_best_path_astar()
     print(len(best_path)-1 + turn_count * 1000)
+    tiles_on_optimal_paths, optimal_cost = grid.get_optimal_tiles_astar()
+    print(f'{len(tiles_on_optimal_paths)} {optimal_cost}')
 
 if __name__ == '__main__':
     main()
