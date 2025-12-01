@@ -2,14 +2,13 @@ package solution
 
 import (
 	"fmt"
-	"os"
 	"strconv"
 )
 
 func turnLeftP1(currState, runningTotal, magnitude int) (int, int) {
-	newState := (currState - magnitude) % 100
+	newState := (currState - magnitude) % dialLimit
 	if newState < 0 {
-		newState += 100
+		newState += dialLimit
 	}
 
 	if newState == 0 {
@@ -20,7 +19,7 @@ func turnLeftP1(currState, runningTotal, magnitude int) (int, int) {
 }
 
 func turnRightP1(currState, runningTotal, magnitude int) (int, int) {
-	newState := (currState + magnitude) % 100
+	newState := (currState + magnitude) % dialLimit
 
 	if newState == 0 {
 		runningTotal += 1
@@ -29,24 +28,24 @@ func turnRightP1(currState, runningTotal, magnitude int) (int, int) {
 	return newState, runningTotal
 }
 
-func SolveP1(data []string) int {
+func SolveP1(data []string) (int, error) {
+
 	turnFuncs := make(map[string]func(int, int, int) (int, int))
 
 	turnFuncs["L"] = turnLeftP1
 	turnFuncs["R"] = turnRightP1
 
 	runningTotal := 0
-	currState := 50
+	currState := initialState
 	for _, instruction := range data {
 		direction := instruction[:1]
 		magnitude, err := strconv.Atoi(instruction[1:])
 		if err != nil {
-			fmt.Printf("Could not convert string %q to integer\n", instruction[1:])
-			os.Exit(1)
+			return 0, fmt.Errorf("could not convert string %q to integer", instruction[1:])
 		}
 
 		currState, runningTotal = turnFuncs[direction](currState, runningTotal, magnitude)
 	}
 
-	return runningTotal
+	return runningTotal, nil
 }

@@ -1,7 +1,6 @@
 package helpers
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -17,8 +16,6 @@ func (t *Timer) Start() {
 	t.start = time.Now()
 }
 
-func (t *Timer) Stop() time.Duration {
-	duration := time.Since(t.start)
-	fmt.Printf("Runtime was %v\n", duration)
-	return duration
+func (t *Timer) Elapsed() time.Duration {
+	return time.Since(t.start)
 }

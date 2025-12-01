@@ -1,18 +1,27 @@
 package helpers
 
 import (
+	"bufio"
 	"fmt"
 	"os"
-	"strings"
 )
 
 func GetInput(path string) ([]string, error) {
-	dat, err := os.ReadFile(path)
+	file, err := os.Open(path)
 	if err != nil {
-		return []string{}, fmt.Errorf("error whilst reading file, %v", err)
+		return nil, fmt.Errorf("error opening file: %w", err)
+	}
+	defer file.Close()
+
+	var lines []string
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
 	}
 
-	data := string(dat[:])
+	if err := scanner.Err(); err != nil {
+		return nil, fmt.Errorf("error reading file: %w", err)
+	}
 
-	return strings.Split(data, "\r\n"), nil
+	return lines, nil
 }

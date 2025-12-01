@@ -4,24 +4,27 @@ import (
 	"advent_of_code/2025/01/helpers"
 	"advent_of_code/2025/01/solution"
 	"fmt"
-	"os"
+	"log"
 )
 
 func main() {
 	data, err := helpers.GetInput("../data.csv")
 	if err != nil {
-		_ = fmt.Errorf("%w", err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
 	timer := helpers.NewTimer()
 	timer.Start()
-	password := solution.SolveP1(data)
-	fmt.Printf("Part 1 password: %d\n", password)
-	timer.Stop()
+	password, err := solution.SolveP1(data)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Part 1 password: %d\nRuntime was %v\n", password, timer.Elapsed())
 
 	timer.Start()
-	password = solution.SolveP2(data)
-	fmt.Printf("Part 2 password: %d\n", password)
-	timer.Stop()
+	password, err = solution.SolveP2(data)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Part 2 password: %d\nRuntime was %v\n", password, timer.Elapsed())
 }
