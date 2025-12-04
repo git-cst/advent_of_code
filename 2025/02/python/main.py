@@ -31,7 +31,7 @@ def solve_part_1(input_data: list[str]) -> int:
 @time_execution
 def solve_part_1_regex(input_data: list[str]) -> int:
     invalid_sum = 0
-    regex_pattern = r'^(\d+)\1$'
+    regex_pattern = r'^(\d+?)\1$'
     for product_id in input_data:
         l_bound, u_bound = product_id.split("-")
 
@@ -77,7 +77,7 @@ def solve_part_2(input_data: list[str]) -> int:
 @time_execution
 def solve_part_2_regex(input_data: list[str]) -> int:
     invalid_sum = 0
-    regex_pattern = r'^(\d+)\1+$'
+    regex_pattern = r'^(\d+?)\1+$'
     for product_id in input_data:
         l_bound, u_bound = product_id.split("-")
 
