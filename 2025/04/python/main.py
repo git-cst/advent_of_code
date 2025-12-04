@@ -2,11 +2,20 @@ from pathlib import Path
 import sys
 import re
 from typing import Optional
+import os
+import time
 
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
 from helper_functions.import_data import get_data
 from helper_functions.time_execution import time_execution
+
+COLORS = {
+    '@': '\033[92m',  # Green
+    'x': '\033[91m',  # Red  
+    '.': '\033[90m',  # Gray
+    'reset': '\033[0m'
+}
 
 class PaperRoll:
     def __init__(self):
@@ -50,8 +59,8 @@ class Warehouse:
         self._valid_paper_rolls: dict[tuple[int, int], PaperRoll] = {}
 
     def generate_grid(self, warehouse_layout: list[str]):
-        self._num_cols = len(data[0])
-        self._num_rows = len(data)
+        self._num_cols = len(warehouse_layout[0])
+        self._num_rows = len(warehouse_layout)
 
         if not self.warehouse_layout:
             self.warehouse_layout: list[list[PaperRoll]] = [[PaperRoll() for _ in range(self._num_cols)] for _ in range(self._num_rows)]
@@ -115,7 +124,12 @@ class Warehouse:
             paper_roll.value = "."
             self._removed_rolls += 1
             self._active_cells.pop((row, col))
-        
+
+    def animate_removal(self):
+        os.system('cls')
+        self.print_warehouse_layout()
+        time.sleep(1)
+
     def print_warehouse_layout(self):
         """Debug method"""       
         def mark_removable_rolls():
@@ -131,9 +145,10 @@ class Warehouse:
         for row in range(self._num_rows):
             print_value = []
             for col in range(self._num_cols):
-                print_value.append(self.warehouse_layout[row][col].value)
+                paper_roll_value = self.warehouse_layout[row][col].value
+                print_value.append(COLORS[paper_roll_value] + paper_roll_value + COLORS['reset'])
 
-            print(print_value)    
+            print("".join(print_value))
 
     @property
     def num_valid_paper_rolls(self):
@@ -148,6 +163,7 @@ def solve_part_1(warehouse_layout: list[str]) -> int:
     warehouse = Warehouse()
     warehouse.generate_grid(warehouse_layout)
     warehouse.count_valid_adjacencies()
+    warehouse.print_warehouse_layout()
     return warehouse.num_valid_paper_rolls
 
 @time_execution
@@ -157,6 +173,7 @@ def solve_part_2(warehouse_layout: list[str]) -> int:
     warehouse.count_valid_adjacencies()
 
     while warehouse.num_valid_paper_rolls > 0:
+        # warehouse.animate_removal() ← add this is you want to animate the removal
         warehouse.remove_valid_paper_rolls()
         warehouse.count_valid_adjacencies()
 
@@ -169,9 +186,9 @@ if __name__ == '__main__':
     print('='*20)
     print(' ' * 7 + 'Part 1' + ' ' * 7)
     print('='*20)
-    print(f'Number of removable paper rolls: {solve_part_1(data)}')
+    print(f'Number of removable paper rolls: {solve_part_1(data)}\n')
 
     print('='*20)
     print(' ' * 7 + 'Part 2' + ' ' * 7)
     print('='*20)
-    print(f'Number of removed paper rolls: {solve_part_2(data)}')
+    print(f'Number of removed paper rolls: {solve_part_2(data)}\n')
