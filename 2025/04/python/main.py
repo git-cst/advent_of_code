@@ -166,5 +166,12 @@ if __name__ == '__main__':
     input_file_path = Path(__file__).parent.parent / 'data.csv'
     data = get_data(input_file_path).splitlines()
 
-    print(solve_part_1(data))
-    print(solve_part_2(data))
+    print('='*20)
+    print(' ' * 7 + 'Part 1' + ' ' * 7)
+    print('='*20)
+    print(f'Number of removable paper rolls: {solve_part_1(data)}')
+
+    print('='*20)
+    print(' ' * 7 + 'Part 2' + ' ' * 7)
+    print('='*20)
+    print(f'Number of removed paper rolls: {solve_part_2(data)}')
