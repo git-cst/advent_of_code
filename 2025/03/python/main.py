@@ -8,44 +8,45 @@ from helper_functions.import_data import get_data
 from helper_functions.time_execution import time_execution
 
 @time_execution
-def solve_part_1(battery_list: list[str]) -> int:
+def solve_part_1(battery_banks: list[str]) -> int:
     total_joltage = 0
 
-    for battery_row in battery_list:
-        battery_row_len = len(battery_row)
+    for battery_bank in battery_banks:
+        battery_bank_len = len(battery_bank)
 
-        left_value = 0
-        right_value = 0
-        for i in range(0, battery_row_len - 1):
-            if int(battery_row[i]) > left_value:
-                left_value = int(battery_row[i])
+        left_jolt = 0
+        right_jolt = 0
+        for i in range(0, battery_bank_len - 1):
+            if int(battery_bank[i]) > left_jolt:
+                left_jolt = int(battery_bank[i])
                 l_bound_r_val = i
 
-            if left_value == 9:
+            if left_jolt == 9:
                 break
 
-        for i in range(battery_row_len - 1, l_bound_r_val, -1):
-            if int(battery_row[i]) > right_value:
-                right_value = int(battery_row[i])
+        for i in range(battery_bank_len - 1, l_bound_r_val, -1):
+            if int(battery_bank[i]) > right_jolt:
+                right_jolt = int(battery_bank[i])
 
-            if right_value == 9:
+            if right_jolt == 9:
                 break
 
-        total_joltage += int(str(left_value) + str(right_value))
+        total_joltage += int(str(left_jolt) + str(right_jolt))
 
     return total_joltage
 
 @time_execution
-def solve_part_2(battery_list: list[str]) -> int:
+def solve_part_2(battery_banks: list[str]) -> int:
     total_joltage = 0
+    max_length = 12 
 
-    for battery_row in battery_list:       
+    for battery_bank in battery_banks:       
         joltage = ""
-        max_length = 11 
-        end_index = len(battery_row) - max_length
+        end_index = len(battery_bank) - (max_length - 1)
         start_index = 0
-        while len(joltage) < 12:
-            search_interval = battery_row[start_index:end_index]
+        
+        while len(joltage) < max_length:
+            search_interval = battery_bank[start_index:end_index]
             curr_max = 0
             for index, jolt in enumerate(search_interval):
                 if jolt == '9':
