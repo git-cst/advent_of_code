@@ -125,11 +125,6 @@ class Warehouse:
             self._removed_rolls += 1
             self._active_cells.pop((row, col))
 
-    def animate_removal(self):
-        os.system('cls')
-        self.print_warehouse_layout()
-        time.sleep(1)
-
     def print_warehouse_layout(self):
         """Debug method"""       
         def mark_removable_rolls():
@@ -163,7 +158,6 @@ def solve_part_1(warehouse_layout: list[str]) -> int:
     warehouse = Warehouse()
     warehouse.generate_grid(warehouse_layout)
     warehouse.count_valid_adjacencies()
-    warehouse.print_warehouse_layout()
     return warehouse.num_valid_paper_rolls
 
 @time_execution
@@ -173,7 +167,6 @@ def solve_part_2(warehouse_layout: list[str]) -> int:
     warehouse.count_valid_adjacencies()
 
     while warehouse.num_valid_paper_rolls > 0:
-        # warehouse.animate_removal() ← add this is you want to animate the removal
         warehouse.remove_valid_paper_rolls()
         warehouse.count_valid_adjacencies()
 
