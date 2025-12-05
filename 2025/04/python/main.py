@@ -163,7 +163,7 @@ def solve_part_1(warehouse_layout: list[str]) -> int:
     warehouse = Warehouse()
     warehouse.generate_grid(warehouse_layout)
     warehouse.count_valid_adjacencies()
-    warehouse.print_warehouse_layout()
+    # warehouse.print_warehouse_layout() ← add this if you want to debug
     return warehouse.num_valid_paper_rolls
 
 @time_execution
