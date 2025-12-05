@@ -66,9 +66,30 @@ def solve_part_2(battery_banks: list[str]) -> int:
             
     return total_joltage
 
+@time_execution
+def solve_part_2_stack(battery_banks: list[str]) -> int:
+    total_joltage = 0
+    max_length = 12 
+
+    for battery_bank in battery_banks:       
+        joltage = []
+        num_chars_left = len(battery_bank)
+        while len(joltage) < max_length:
+            for i, jolt in enumerate(battery_bank):
+                while joltage and (int(jolt) > int(joltage[-1]) and len(joltage) + (num_chars_left - i) > max_length):
+                    joltage.pop()
+                
+                if len(joltage) < max_length:
+                    joltage.append(jolt) 
+
+        total_joltage += int("".join(joltage))
+            
+    return total_joltage
+
 if __name__ == '__main__':
     input_file_path = Path(__file__).parent.parent / 'data.csv'
     data = get_data(input_file_path).splitlines()
 
     print(solve_part_1(data))
     print(solve_part_2(data))
+    print(solve_part_2_stack(data))
