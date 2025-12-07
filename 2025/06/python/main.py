@@ -103,5 +103,5 @@ if __name__ == '__main__':
     input_data_path = Path(__file__).parent.parent / 'data.csv'
     input_data = get_data(input_data_path).splitlines()
 
-    #print(solve_part_1(input_data))
+    print(solve_part_1(input_data))
     print(solve_part_2(input_data))
