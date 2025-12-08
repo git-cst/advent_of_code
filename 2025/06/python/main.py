@@ -10,17 +10,15 @@ from helper_functions.time_execution import time_execution
 @time_execution
 def solve_part_1(input_data: list[str]) -> int:
     memo = {}
-    operations = {
-        '+': lambda x, y: int(x) + int(y),
-        '*': lambda x, y: int(x) * int(y)
-    }
-
     def calculate_sum(val1: str, val2: str, operator: str) -> int:
         if (val1, val2, operator) in memo:
             return memo[(val1, val2, operator)]
         
-        memo[(val1, val2, operator)] = operations[operator](val1, val2)
-
+        if operator == '*':
+            memo[(val1, val2, operator)] = int(val1) * int(val2)
+        else:
+            memo[(val1, val2, operator)] = int(val1) + int(val2)
+        
         return memo[(val1, val2, operator)]
 
     # Normalize dataset
@@ -45,11 +43,6 @@ def solve_part_1(input_data: list[str]) -> int:
 @time_execution
 def solve_part_2(input_data):
     memo = {}
-    operations = {
-        '+': lambda x, y: int(x) + int(y),
-        '*': lambda x, y: int(x) * int(y)
-    }
-
     def extract_data(input_data: list[list[str]]) -> list[list[str]]:
         num_lists = len(input_data) - 1
         num_chars = len(input_data[0])
@@ -73,11 +66,14 @@ def solve_part_2(input_data):
 
         return problem_values
 
-    def calculate_sum(val1: str, val2: str, operator: str) -> int:
+    def calculate_sum(val1: int, val2: int, operator: str) -> int:
         if (val1, val2, operator) in memo:
             return memo[(val1, val2, operator)]
         
-        memo[(val1, val2, operator)] = operations[operator](val1, val2)
+        if operator == "*":
+            memo[(val1, val2, operator)] = val1 * val2
+        else:
+            memo[(val1, val2, operator)] = val1 + val2
 
         return memo[(val1, val2, operator)]
     
