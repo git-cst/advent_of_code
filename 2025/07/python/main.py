@@ -1,6 +1,7 @@
 from pathlib import Path
 import sys
 import re
+from enum import Enum
 
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
@@ -16,6 +17,11 @@ COLORS = {
 }
 
 
+class Direction(Enum):
+    DOWN = "s"
+    DOWN_LEFT = "w"
+    DOWN_RIGHT = "e"
+    
 class Cell:
     def __init__(self):
         self.value = None
@@ -36,8 +42,8 @@ class Grid:
 
         self.start_point: Cell = None
         self.splitters: dict[tuple[int, int], Cell] = {}
-        self.active_beams: list[Cell] = []
-
+        self.active_beams: dict[int, set[Cell]] = {}
+        
     def generate_grid(self, input_data):
         self._num_rows = len(input_data)
         self._num_cols = len(input_data[0])
@@ -49,14 +55,12 @@ class Grid:
                 node = self._cells[row][col]
                 input_data_value = input_data[row][col]
                 node.value = input_data_value
+                node.pos = (row, col)
                 
-                if input_data_value != ".":
-                    node.set_pos(row, col)
-
-                    if input_data_value == "^":
-                        self.splitters[(row, col)] = node
-                    elif input_data_value == "S":
-                        self.start_point = node
+                if input_data_value == "^":
+                    self.splitters[(row, col)] = node
+                elif input_data_value == "S":
+                    self.start_point = node
 
                 # east adjacency
                 if col + 1 < self._num_cols:
@@ -72,11 +76,61 @@ class Grid:
                         
     def calculate_tachyons(self):
         """Calculates the answer based on the x coordinates"""
-        pass
+        self.count_splits: int = 0
 
-    def generate_tachyons(self):
-        """Iteratively calculates if there should be a tachyon beam or not. Useful for animation"""
-        pass
+        start_row, start_col = self.start_point.pos
+        start_beam: Cell = self._cells[start_row + 1][start_col]
+        start_beam.value = "|"
+
+        self.active_beams[1] = set()
+        self.active_beams[1].add(start_beam)
+        
+        for row in range(2, self._num_rows):
+            self.active_beams[row] = set()
+            for beam in self.active_beams[row - 1]:
+                _, beam_col = beam.pos
+
+                current_cell: Cell = self._cells[row][beam_col]
+
+                if (row, beam_col) in self.splitters:
+                    self.count_splits += 1
+                    left_adjacent_cell = current_cell.w
+                    right_adjacent_cell = current_cell.e
+
+                    if left_adjacent_cell:
+                        left_adjacent_cell.value = "|" 
+                        self.active_beams[row].add(left_adjacent_cell)
+
+                    if right_adjacent_cell:
+                        right_adjacent_cell.value = "|"
+                        self.active_beams[row].add(right_adjacent_cell)
+
+                else:
+                    current_cell.value = "|"
+                    self.active_beams[row].add(current_cell)
+
+    def calculate_unique_paths(self):
+        memo = {}
+        def count_paths(cell: Cell, direction: Direction):
+            state = (cell.pos, direction)
+
+            if state in memo:
+                return memo[state]
+            
+            if not cell.s:
+                return 1
+            
+            count = 0
+            if cell.s.pos in self.splitters:
+                count += count_paths(cell.s.w, Direction.DOWN_LEFT)
+                count += count_paths(cell.s.e, Direction.DOWN_RIGHT)
+            else:
+                count += count_paths(cell.s, Direction.DOWN)
+
+            memo[state] = count
+            return count
+    
+        self.path_count = count_paths(self.start_point, Direction.DOWN)
 
     def print_grid(self):
         """Debug method"""               
@@ -88,17 +142,26 @@ class Grid:
                 print_value.append(COLORS[cell_value] + cell_value + COLORS['reset'])
 
             print("".join(print_value))
+        print("\n")
 
 
 @time_execution
 def solve_part_1(input_data: list[str]) -> int:
     grid = Grid()
     grid.generate_grid(input_data)
-    grid.print_grid()
-    pass
+    grid.calculate_tachyons()
+    return grid.count_splits
+
+@time_execution
+def solve_part_2(input_data: list[str]) -> int:
+    grid = Grid()
+    grid.generate_grid(input_data)
+    grid.calculate_unique_paths()
+    return grid.path_count
 
 if __name__ == '__main__':
-    input_data_path = Path(__file__).parent.parent / 'test.csv'
+    input_data_path = Path(__file__).parent.parent / 'data.csv'
     input_data = get_data(input_data_path).splitlines()
 
     print(solve_part_1(input_data))
+    print(solve_part_2(input_data))
