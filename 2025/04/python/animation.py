@@ -110,5 +110,3 @@ if __name__ == '__main__':
         wh.count_valid_adjacencies()
 
     win.wait_for_close()
-
-

@@ -1,6 +1,5 @@
 from pathlib import Path
 import sys
-import re
 from enum import Enum
 
 sys.path.append(str(Path(__file__).parent.parent.parent))

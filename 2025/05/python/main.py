@@ -101,4 +101,3 @@ if __name__ == '__main__':
 
     print(solve_part_1(ingredient_ranges, available_ingredients))
     print(solve_part_2(ingredient_ranges))
-
