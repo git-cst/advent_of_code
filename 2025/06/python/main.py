@@ -9,17 +9,11 @@ from helper_functions.time_execution import time_execution
 
 @time_execution
 def solve_part_1(input_data: list[str]) -> int:
-    memo = {}
-    def calculate_sum(val1: str, val2: str, operator: str) -> int:
-        if (val1, val2, operator) in memo:
-            return memo[(val1, val2, operator)]
-        
+    def calculate_sum(val1: str, val2: str, operator: str) -> int:       
         if operator == '*':
-            memo[(val1, val2, operator)] = int(val1) * int(val2)
+            return int(val1) * int(val2)
         else:
-            memo[(val1, val2, operator)] = int(val1) + int(val2)
-        
-        return memo[(val1, val2, operator)]
+            return int(val1) + int(val2)
 
     # Normalize dataset
     val1_list, val2_list, val3_list, val4_list, operator_list = input_data
@@ -67,16 +61,11 @@ def solve_part_2(input_data):
         return problem_values
 
     def calculate_sum(val1: int, val2: int, operator: str) -> int:
-        if (val1, val2, operator) in memo:
-            return memo[(val1, val2, operator)]
-        
         if operator == "*":
-            memo[(val1, val2, operator)] = val1 * val2
+            return val1 * val2
         else:
-            memo[(val1, val2, operator)] = val1 + val2
-
-        return memo[(val1, val2, operator)]
-    
+            return val1 + val2
+            
     # Normalize dataset
     problem_values = extract_data(input_data)
     operator_list = input_data[-1]
