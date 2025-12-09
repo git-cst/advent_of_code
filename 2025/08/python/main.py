@@ -11,7 +11,7 @@ from helper_functions.time_execution import time_execution
 # Euclidean distance calculated as math.sqrt((x_point_1 - x_point_2) ** 2 + (y_point_1 - y_point_2) ** 2 + (y_point_1 - y_point_2) ** 2)
 # But math apparently has an even better formula (math.dist)
 
-@dataclass(frozen=True)
+@dataclass(frozen=True) # Frozen = true so we can hash the dataclass (implements __hash__ and __eq__)
 class Point:
     x: int
     y: int
@@ -23,33 +23,39 @@ class Point:
 def distance_to_point(point_1: Point, point_2: Point) -> int:
     return math.dist(point_1, point_2)
 
-
-
 @time_execution
-def solve_part_1(data: list[str]) -> int:
+def solve_part_1(data: list[str], iterations = 1000) -> int:
     points = [Point(*map(int, row.split(","))) for row in data]
     circuits: list[set[Point]] = [{point} for point in points]
 
+    # Calculate the distance between all points
     distance_list = []
     num_points = len(points)
     for index, point in enumerate(points):
         for i in range(index + 1, num_points):
             distance_list.append((point, points[i], distance_to_point(point, points[i])))
 
+    # Sort to the shortest distance distance_list = list((point1, point2, distance))
     distance_list = sorted(distance_list, key=lambda x: x[2]) 
     
-    for i in range(min(1000, len(distance_list))):
+    # Iterate through the list joining the points
+    for i in range(min(iterations, len(distance_list))):
         point_1, point_2, _ = distance_list[i]
         
+        # Find the circuit where point_1 exists (don't continue searching)
+        # Find the circuit where point_2 exists (don't continue searching)
         circuit_1 = next((circuit for circuit in circuits if point_1 in circuit), None)
         circuit_2 = next((circuit for circuit in circuits if point_2 in circuit), None)
 
+        # If the circuits are different we can merge the circuits
+        # Otherwise these points are already joined together in the circuit
         if circuit_1 is not circuit_2:
             merged = circuit_1 | circuit_2
             circuits.remove(circuit_1)
             circuits.remove(circuit_2)
             circuits.append(merged)
 
+    # Sort by length to get the top 3
     circuits.sort(key=len, reverse=True)
     top_3_sizes = [len(circuits[i]) for i in range(3)]
     return math.prod(top_3_sizes)
@@ -59,35 +65,45 @@ def solve_part_2(data: list[str]) -> int:
     points = [Point(*map(int, row.split(","))) for row in data]
     circuits: list[set[Point]] = [{point} for point in points]
 
+    # Calculate the distance between all points
     distance_list: list[tuple[Point, Point, float]] = []
     num_points = len(points)
     for index, point in enumerate(points):
         for i in range(index + 1, num_points):
             distance_list.append((point, points[i], distance_to_point(point, points[i])))
 
+    # Sort to the shortest distance distance_list = list((point1, point2, distance))
     distance_list = sorted(distance_list, key=lambda x: x[2]) 
     
+    # Continuously loop through until the length of circuits is 1 (e.g. there is only one circuit)
     i = 0
     while len(circuits) != 1:
+        # Retrieve the points at the index
         point_1, point_2, _ = distance_list[i]
         
+        # Find the circuit where point_1 exists (don't continue searching)
+        # Find the circuit where point_2 exists (don't continue searching)
         circuit_1 = next((circuit for circuit in circuits if point_1 in circuit), None)
         circuit_2 = next((circuit for circuit in circuits if point_2 in circuit), None)
 
+        # If the circuits are different we can merge the circuits
+        # Otherwise these points are already joined together in the circuit
         if circuit_1 is not circuit_2:
             merged = circuit_1 | circuit_2
             circuits.remove(circuit_1)
             circuits.remove(circuit_2)
             circuits.append(merged)
 
+        # Increment index so we retrieve the next set of points
         i += 1
 
+    # The last points we found are still stored in the functions scope so we can just multiply their x property
     return point_1.x * point_2.x
 
 class DisjointSetUnion:
     """
     This code is pulled from Claude.
-    Did not know about the DisjoinSetUnion / Union-Find data structure.
+    Did not know about the DisjointSetUnion / Union-Find data structure.
     Shown here for reference purposes.
     """
 
